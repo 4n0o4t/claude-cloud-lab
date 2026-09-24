@@ -17,6 +17,7 @@ docs/
 │  └─ frontend/         # 前端专题，按需再读
 ├─ decisions/           # NNNN-slug.md 编号决策记录
 ├─ plans/               # 阶段计划与 checklist
+├─ diary/               # 按天的工作日记（YYYY-MM-DD.md）
 └─ templates/           # 可复制的模板
 ```
 
@@ -26,6 +27,7 @@ docs/
 - “现在在做什么、卡在哪、下个会话从哪继续”：`status.md`。
 - “本轮多步骤任务怎么推进”：`plans/<yyyy-mm-dd>-<slug>.md`，status 只指向一个主 checklist。
 - “为什么选了 A 而不是 B”：`decisions/NNNN-<slug>.md`。
+- “那天发生了什么、踩了什么坑、有什么感想”：`diary/YYYY-MM-DD.md`，写完当天不再改，不作为状态源。
 - “一次实验的代码、过程和结论”：`experiments/<yyyy-mm-dd>-<slug>/`。
 - “长期维护的工具或应用”：`projects/<slug>/`。
 - “可以随时删的大文件、日志、截图”：`temp/`（ignored，容器回收即消失）。
