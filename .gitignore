@@ -1,0 +1,43 @@
+# 本地/私人工具状态
+# 注意：AGENTS.md、CLAUDE.md、docs/ 与 .claude/settings.json 在本仓库是提交的跨会话记忆。
+.codex/
+.vscode/
+.idea/
+.claude/settings.local.json
+
+# 密钥与环境变量
+.env
+.env.*
+!.env.example
+
+# 可丢弃的任务工作区
+temp/
+
+# 系统/编辑器噪音
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+
+# Node
+node_modules/
+dist/
+build/
+.turbo/
+.vite/
+coverage/
+
+# 日志和生成产物
+*.log
+*.tmp
+*.bak
