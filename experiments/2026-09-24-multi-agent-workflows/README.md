@@ -18,12 +18,7 @@
    - [Kimi Agent Swarm 帮助文档](https://github.com/MoonshotAI/kimi-help-center/blob/master/en-US/agent/swarm.md)。
 3. **社区文章**：[契约式设计（contract-based design）](https://dev.to/akshatsoni26/contract-based-design-how-i-make-ai-agents-work-faster-without-breaking-each-other-1jn2)。
 
-没有找到的：**“Kimi K3 复刻 iOS 系统”的原始出处。** Kimi K3 官方博客和新闻页都没有这个案例。能找到的最接近的内容有两个：
-
-- 开发者用 Kimi K3 复刻 iOS 18 风格天气组件的实测（[80aj](https://www.80aj.com/2026/07/18/kimi3-ios-weather-component/)）；
-- 一个标题为 “Kimi Code Agent Swarm built an entire app end to end” 的视频。
-
-在拿到原帖或仓库之前，本文不引用这个案例的任何细节。
+“Kimi 复刻苹果系统”案例：网络搜索没有找到出处，Kimi K3 官方博客和新闻页都没有提到。后来仓库所有者提供了作品地址 <https://macos27.kimi.page/>，复刻的其实是 **macOS** 而不是 iOS。分析见下方 E 节。
 
 ## 结果
 
@@ -81,6 +76,50 @@
 - 本仓库多数任务规模很小，默认并行弊大于利。
 - 云端会话可用 Agent 工具（subagent，可用 worktree 隔离）。agent teams 需要额外的实验开关，当前环境未确认启用。
 
+### E. 案例二：macOS 27 网页复刻（Kimi 托管页面）
+
+材料：仓库所有者提供的 <https://macos27.kimi.page/>。下载了 `index.html` 和打包后的 JS（约 2.4 MB）、CSS（约 84 KB），只放在被忽略的 `temp/macos27/` 里分析，不提交。
+
+**怎么还原出结构的**：线上没有 sourcemap（`.map` 返回 404）。但每个 JSX 元素都带着 `"code-path":"src/…:行:列"` 属性（例如 `src/os/MacOS.tsx:183:29`），这很可能是平台为“点选定位源码”注入的。据此还原出 98 个 `.tsx` 源文件的路径。每个文件取出现过的最大行号相加，约 3.3 万行；这只是下限，不含纯 TS 的 store 和工具文件。
+
+**技术栈**（打包产物中可以看到）：React 19.2.3、zustand（含 persist 中间件）、lucide 图标、Vite。
+
+**目录即分工**：
+
+```text
+src/
+├─ main.tsx, App.tsx
+├─ os/MacOS.tsx                # 系统外壳：开机、锁屏、睡眠、关机状态
+├─ os/components/              # 22 个外壳组件：Dock、MenuBar、WindowFrame、WindowManager、
+│                              #   Spotlight、ControlCenter、NotificationCenter、MissionControl……
+└─ apps/<分类>/<应用>/         # 约 45 个应用，一个应用一个目录
+   ├─ communication/ facetime, mail, messages, phone, shared/
+   ├─ internet/      safari（12 个文件 + sites/ 8 个仿站）, maps, stocks, weather
+   ├─ media/         music, photos, photobooth, podcasts, quicktime, tv, voicememos
+   ├─ productivity/  calendar, contacts, freeform, notes, reminders, stickies, textedit
+   ├─ system/        settings（6 个文件）, terminal, appstore, activitymonitor, diskutility
+   └─ utilities/     calculator, chess, clock, dictionary, games, home, news, preview
+```
+
+**应用之间的契约**：
+
+| 契约 | 证据 |
+| --- | --- |
+| 统一应用注册表 | 37 条形如 `{ id, name, icon: { from, to, glyph }, component, defaultSize: { w, h } }` 的记录；外壳只认这个结构 |
+| 每个应用独立的持久化命名空间 | zustand persist 的 `name: "macos27:app:<id>"`，带 `version` 和 `migrate`；共 32 个，互不共享状态 |
+| 外壳与应用之间的事件频道 | `macos27:<app>:menu` / `nav` / `pane` 这类命名频道（menu 8 个、nav 11 个、pane 15 个） |
+| 分类内共享 UI | `communication/shared/ui.tsx`、`media/utils.tsx`、`settings/shared.tsx`，共享范围限定在分类内部 |
+
+**运行**：页面自身在容器 Chromium 里有证书问题（代理 CA 不受信任，按环境规则不关 TLS 校验），改为本地托管下载的副本，1440×900 截图。能看到菜单栏、Finder 窗口（侧栏、图标视图、状态栏）、日历、天气、股票小组件和完整 Dock，`pageerror` 为空。
+
+**局限**：
+
+- 打包产物里**没有任何能直接证明使用了多 agent 的痕迹**（泰坦尼克号至少还有 `Owner:` 注释）。“多个 subagent 完成”目前只来自传言，结构上可行，但没有证实。
+- 没有逐个试用 45 个应用。
+- 行数统计是下限。
+
+**对本调研的补充**：它把泰坦尼克号的“一文件一 owner”放大成了“**一目录一 owner**”；并且用“注册表 + 独立状态命名空间 + 命名事件频道”三件套，让几十个应用互不干扰。这种形态的项目最适合大规模并行：外壳由集成方负责，应用可以分给任意多个 agent。
+
 ## 结论
 
 - 结论：泰坦尼克号的结构，和官方、社区给出的做法高度一致，都是“契约 + 文件所有权 + 共享状态 + 集成核对”。这套骨架可以直接借鉴；Kimi 那种数百 agent 的规模不适合本仓库。
@@ -101,6 +140,8 @@
 | R5 | **验证入口进契约**：可确定、可定格的调试入口（类似 `?t=&freeze=1`）写进契约，作为验收手段 |
 | R6 | **规模上限**：默认 2–4 个子 agent；子 agent 只拿契约和自己的任务，不拿完整对话 |
 | R7 | **收口核对**：lead 按契约逐项核对接口和所有权有没有越界，再走常规的 `scripts/check.sh` 与 PR 流程 |
+| R8 | **可插拔三件套**（来自 macOS 27）：模块数量多时，契约里固定注册表结构、每个模块独立的状态命名空间、命名事件频道，子 agent 只能通过这三者和外壳交互 |
+| R9 | **所有权粒度可以放大到目录**：一个子 agent 负责一个目录；共享代码只能放在“分类内 shared”或外壳里，并且写明归属 |
 
 可能的落地方式（普通 PR 与规则类 PR 分开）：
 

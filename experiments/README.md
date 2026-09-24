@@ -16,4 +16,4 @@
 | 目录 | 问题 | 状态 | 结论摘要 |
 | --- | --- | --- | --- |
 | [`2026-09-24-threejs-titanic`](2026-09-24-threejs-titanic/README.md) | 单文件 Three.js 泰坦尼克号动画如何组织、还原工程是否忠实 | 完成 | 还原忠实且可运行；核心是“故事状态为时间的纯函数”，疑似多 Agent 分模块编写 |
-| [`2026-09-24-multi-agent-workflows`](2026-09-24-multi-agent-workflows/README.md) | 从 AI 自组织大项目提炼可用的多 Agent 工作流 | 完成 | 共同骨架是“契约 + 文件所有权 + 共享状态 + 集成核对”；提出 7 条候选规则与迷你泰坦尼克号试点，待采纳 |
+| [`2026-09-24-multi-agent-workflows`](2026-09-24-multi-agent-workflows/README.md) | 从 AI 自组织大项目提炼可用的多 Agent 工作流 | 完成 | 共同骨架是“契约 + 文件所有权 + 共享状态 + 集成核对”；补充 macOS 27 案例（一目录一 owner + 注册表）；提出 9 条候选规则与迷你泰坦尼克号试点，待采纳 |
