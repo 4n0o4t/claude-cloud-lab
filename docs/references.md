@@ -37,6 +37,8 @@
 | 默认分支 | `main` | 分支列表 | 2026-09-24 |
 | `main` 保护 | Ruleset `protect-main`：禁止删除、禁止 force push、合并前必须走 PR，Required approvals 为 0（PR 以所有者账号创建，无法自我批准） | 分支 API `protected: true`；网页编辑被拒 | 2026-09-24 |
 | PR 合并方式 | Create a merge commit（保留原提交 hash，会话分支可 fast-forward 到 `main` 继续工作） | PR #1 合并结果 `10c6008` | 2026-09-24 |
+| 必须通过的检查 | `protect-main` 追加 Require status checks to pass：`repo hygiene`；未勾选 “up to date before merging” | 所有者操作截图（Ruleset updated）；待下一个 PR 确认显示 Required | 2026-09-24 |
+| 自动合并 | 需在 Settings → General → Pull Requests 勾选 Allow auto-merge；普通 PR 由 Claude 开启 auto-merge，规则类 PR 人工合并（决策 0002） | 待所有者开启后在首个普通 PR 上确认 | 2026-09-24 |
 | 任务派发 | GitHub Issue；PR 描述写 `Closes #N` | Issue #2 | 2026-09-24 |
 | CI | `.github/workflows/check.yml`：`pull_request` 与 push 到 `main` 时在 `ubuntu-latest` 运行 `scripts/check.sh`；job 名 `repo hygiene` | 仓库文件 | 2026-09-24 |
 
