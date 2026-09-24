@@ -28,6 +28,7 @@ This repo holds experiments, prototypes and small tools built by Claude in Claud
 ├─ projects/            # 长期子项目，每个目录自带 README
 ├─ scripts/
 │  └─ check.sh          # 仓库卫生检查
+├─ .github/workflows/   # GitHub Actions：PR 自动运行 check.sh
 ├─ CHANGELOG.md
 └─ temp/                # 被 git 忽略的临时工作区
 ```
@@ -59,6 +60,8 @@ bash scripts/check.sh
 ```
 
 它检查必需文件、不应被跟踪的路径、疑似 secret、Markdown 相对链接、shell 脚本语法，以及每个实验和子项目目录都有 README。
+
+同一脚本也由 GitHub Actions（`.github/workflows/check.yml`）在每个 PR 和每次合并进 `main` 时自动运行，结果显示在 PR 的 Checks 标签页。
 
 ## License
 

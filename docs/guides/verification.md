@@ -8,7 +8,7 @@
 - `Smoke`：回答“最小闭环能不能跑”。
 - `Full Check`：回答“这个阶段能不能交付或合并”。
 
-仓库级入口：`bash scripts/check.sh`。实验级入口写在各实验的 README 中。
+仓库级入口：`bash scripts/check.sh`，CI（`.github/workflows/check.yml`）在每个 PR 上自动运行同一脚本。实验级入口写在各实验的 README 中。本地通过后仍要看 PR 的 Checks 结果，CI 红了先修再请求合并。
 
 ## 风险比例
 
