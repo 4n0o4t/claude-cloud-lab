@@ -1,0 +1,21 @@
+# 仓库卫生检查：每个 PR 和每次合并进 main 时自动运行 scripts/check.sh。
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  repo-hygiene:
+    name: repo hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v7
+      - name: 运行 scripts/check.sh
+        run: bash scripts/check.sh
