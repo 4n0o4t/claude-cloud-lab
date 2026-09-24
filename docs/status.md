@@ -4,7 +4,7 @@
 
 - 阶段：discover
 - 状态：基线就绪，第一个实验已完成，等待下一个任务
-- 最近收口：2026-09-24，完成 Three.js 泰坦尼克号动画拆解实验
+- 最近收口：2026-09-24，八节 GitHub 课结业，写下当天日记
 - Branch：`main`（默认分支，2026-09-24 由仓库所有者从初始化提交 `6cdc906` 创建）
 - 环境基线：已探测，见 `docs/references.md`
 
@@ -40,6 +40,7 @@
 - 恢复工作必须先读：`AGENTS.md`、`README.md`、本文件
 - 最新 decision：`docs/decisions/0002-tiered-auto-merge.md`
 - 最新 plan：无
+- 最新日记：`docs/diary/2026-09-24.md`（回顾用，不作为状态源）
 - 可以忽略的旧上下文：无
 
 ## 下一步
