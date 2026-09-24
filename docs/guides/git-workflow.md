@@ -84,5 +84,6 @@ fix: 修复检查脚本对空仓库的误报
 
 ## 版本
 
-- 仓库整体不维护版本号；需要发布的实验在自己目录内管理版本。
-- 值得标记的里程碑用 `vMAJOR.MINOR.PATCH` tag，并在 `CHANGELOG.md` 记录。
+- 仓库整体只给值得标记的里程碑打 `vMAJOR.MINOR.PATCH` tag（例如基线完成的 `v0.1.0`），并在 `CHANGELOG.md` 把 `Unreleased` 下的条目移到对应版本标题下。
+- 需要发版的子项目用 `<slug>-vMAJOR.MINOR.PATCH` tag，避免与仓库里程碑或其他子项目冲突（见 `projects/README.md` 的约定）。
+- tag 打在 `main` 的合并提交上；Release 在 GitHub 网页基于该 tag 发布，说明文字取自 `CHANGELOG.md` 对应段落。
