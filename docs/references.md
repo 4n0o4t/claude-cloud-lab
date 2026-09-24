@@ -41,6 +41,7 @@
 | 自动合并 | 需在 Settings → General → Pull Requests 勾选 Allow auto-merge；普通 PR 由 Claude 开启 auto-merge，规则类 PR 人工合并（决策 0002） | PR #6 开启后 14 秒内检查通过并自动合并 | 2026-09-24 |
 | 任务派发 | GitHub Issue；PR 描述写 `Closes #N` | Issue #2 | 2026-09-24 |
 | 版本发布 | 仓库里程碑 tag `vX.Y.Z`，子项目 tag `<slug>-vX.Y.Z`；Release 在网页基于 tag 发布，说明取自 `CHANGELOG.md`。首个 Release `v0.1.0` 指向 `2709031` | `git rev-parse v0.1.0^{commit}`、GitHub Releases | 2026-09-24 |
+| 安全设置 | Settings → Advanced Security：Secret Protection 与 Push protection 开启（公开仓库默认）；Dependency graph 与 Dependabot alerts 开启；Dependabot 自动升级 PR、CodeQL、Private vulnerability reporting 暂不开启，等有子项目再评估 | 所有者操作截图（Repository settings saved） | 2026-09-24 |
 | CI | `.github/workflows/check.yml`：`pull_request` 与 push 到 `main` 时在 `ubuntu-latest` 运行 `scripts/check.sh`；job 名 `repo hygiene` | 仓库文件 | 2026-09-24 |
 
 ## 默认选择
