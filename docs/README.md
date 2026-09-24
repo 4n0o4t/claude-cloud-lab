@@ -27,6 +27,7 @@ docs/
 - “本轮多步骤任务怎么推进”：`plans/<yyyy-mm-dd>-<slug>.md`，status 只指向一个主 checklist。
 - “为什么选了 A 而不是 B”：`decisions/NNNN-<slug>.md`。
 - “一次实验的代码、过程和结论”：`experiments/<yyyy-mm-dd>-<slug>/`。
+- “长期维护的工具或应用”：`projects/<slug>/`。
 - “可以随时删的大文件、日志、截图”：`temp/`（ignored，容器回收即消失）。
 
 ## 任务路由
@@ -44,6 +45,11 @@ Git、分支、commit、版本：
 
 - `../experiments/README.md`
 - `templates/experiment.md`
+
+新建或维护长期子项目：
+
+- `../projects/README.md`
+- `templates/project.md`
 
 后端、架构、重构：
 

@@ -2,9 +2,9 @@
 
 ## 当前阶段
 
-- 阶段：init → discover
-- 状态：初始化基线已提交，等待第一个实验任务
-- 最近收口：2026-09-24，初始化仓库基线
+- 阶段：discover
+- 状态：基线与目录约定就绪，等待第一个实验或子项目任务
+- 最近收口：2026-09-24，增加 `projects/` 目录约定（#2）
 - Branch：`main`（默认分支，2026-09-24 由仓库所有者从初始化提交 `6cdc906` 创建）
 - 环境基线：已探测，见 `docs/references.md`
 
@@ -12,12 +12,14 @@
 
 - 目标：无进行中的任务
 - 主 Checklist：无；多步骤任务开始时在 `docs/plans/` 建立，并在此填写唯一入口
+- 任务来源：仓库所有者通过 GitHub Issue 派发；PR 描述写 `Closes #N` 以便合并后自动关闭
 - 验收与验证：`bash scripts/check.sh`
 
 ## 已完成与验证
 
 - 已完成：借鉴 AWZ Workflow 初始化基线，裁剪多 Agent 协作，调整为提交 `AGENTS.md` / `CLAUDE.md` / `docs/`（见 `docs/decisions/0001-adopt-awz-baseline.md`）。
-- 已验证事实：`bash scripts/check.sh` 在初始化提交上通过。
+- 已完成：`projects/` 长期子项目约定与模板，`scripts/check.sh` 新增“实验与子项目目录均有 README”检查（#2）。
+- 已验证事实：`bash scripts/check.sh` 全部通过；README 检查的失败路径经负向测试确认。
 - 已废弃路线：AWZ 的 room ledger、owner 表、handoff 模板、Reference Library 与 `.awz/references.json`——单一维护者且无持久本机，不需要。
 
 ## 阻塞项
@@ -33,4 +35,4 @@
 
 ## 下一步
 
-1. 等待用户给出第一个实验或工具任务。
+1. 等待仓库所有者通过 Issue 给出第一个实验或子项目任务。

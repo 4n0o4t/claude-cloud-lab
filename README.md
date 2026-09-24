@@ -4,7 +4,7 @@
 
 ## 项目简介 / Overview
 
-这里存放 Claude 在 Claude Code 云端环境里做的实验、原型和小工具。每个云端会话都运行在全新的临时容器中，所以仓库本身承担“跨会话记忆”：规则、当前状态、决策和实验结论都提交进 git。
+这里存放 Claude 在 Claude Code 云端环境里做的实验、原型和长期子项目。每个云端会话都运行在全新的临时容器中，所以仓库本身承担“跨会话记忆”：规则、当前状态、决策和实验结论都提交进 git。
 
 工作方式借鉴 [AWZ Workflow](https://github.com/Dr-Ai-0018/awz-workflow) 的初始化基线，去掉了多 Agent 协作部分，并针对临时容器调整了“哪些文件提交”的边界。
 
@@ -23,8 +23,9 @@ This repo holds experiments, prototypes and small tools built by Claude in Claud
 │  ├─ guides/           # 按任务加载的工作细则
 │  ├─ decisions/        # 编号决策记录（ADR）
 │  ├─ plans/            # 阶段计划与 checklist
-│  └─ templates/        # 实验、决策、review、计划模板
-├─ experiments/         # 自包含实验，每个目录自带 README
+│  └─ templates/        # 实验、子项目、决策、review、计划模板
+├─ experiments/         # 一次性实验，每个目录自带 README
+├─ projects/            # 长期子项目，每个目录自带 README
 ├─ scripts/
 │  └─ check.sh          # 仓库卫生检查
 ├─ CHANGELOG.md
@@ -40,7 +41,14 @@ mkdir -p experiments/$(date +%Y-%m-%d)-<slug>
 cp docs/templates/experiment.md experiments/$(date +%Y-%m-%d)-<slug>/README.md
 ```
 
-约定详见 [`experiments/README.md`](experiments/README.md)。
+新建一个长期子项目：
+
+```bash
+mkdir -p projects/<slug>
+cp docs/templates/project.md projects/<slug>/README.md
+```
+
+两者的区别和约定详见 [`experiments/README.md`](experiments/README.md) 与 [`projects/README.md`](projects/README.md)。
 
 ## 开发 / Development
 
@@ -50,7 +58,7 @@ cp docs/templates/experiment.md experiments/$(date +%Y-%m-%d)-<slug>/README.md
 bash scripts/check.sh
 ```
 
-它检查必需文件、不应被跟踪的路径、疑似 secret、Markdown 相对链接和 shell 脚本语法。
+它检查必需文件、不应被跟踪的路径、疑似 secret、Markdown 相对链接、shell 脚本语法，以及每个实验和子项目目录都有 README。
 
 ## License
 

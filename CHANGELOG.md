@@ -10,4 +10,5 @@
 
 - 借鉴 AWZ Workflow 初始化仓库基线：`AGENTS.md` / `CLAUDE.md` 规则入口、`docs/` 状态与决策、guides、模板、`.gitignore`、`.gitattributes`、`.editorconfig`、`.env.example`、MIT License。
 - `experiments/` 目录约定与实验模板。
+- `projects/` 长期子项目目录约定与子项目模板；`scripts/check.sh` 检查每个实验和子项目目录都有 README（#2）。
 - `scripts/check.sh` 仓库卫生检查：必需文件、禁止跟踪路径、疑似 secret、Markdown 相对链接、shell 语法。
