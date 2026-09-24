@@ -18,7 +18,7 @@
    - [Kimi Agent Swarm 帮助文档](https://github.com/MoonshotAI/kimi-help-center/blob/master/en-US/agent/swarm.md)。
 3. **社区文章**：[契约式设计（contract-based design）](https://dev.to/akshatsoni26/contract-based-design-how-i-make-ai-agents-work-faster-without-breaking-each-other-1jn2)。
 
-“Kimi 复刻苹果系统”案例：网络搜索没有找到出处，Kimi K3 官方博客和新闻页都没有提到。后来仓库所有者提供了作品地址 <https://macos27.kimi.page/>，复刻的其实是 **macOS** 而不是 iOS。分析见下方 E 节。
+“Kimi 复刻苹果系统”案例：网络搜索没有找到出处，Kimi K3 官方博客和新闻页都没有提到。后来仓库所有者提供了作品地址 <https://macos27.kimi.page/> 和作者原帖，复刻的其实是 **macOS** 而不是 iOS。分析见下方 E 节。
 
 ## 结果
 
@@ -112,9 +112,28 @@ src/
 
 **运行**：页面自身在容器 Chromium 里有证书问题（代理 CA 不受信任，按环境规则不关 TLS 校验），改为本地托管下载的副本，1440×900 截图。能看到菜单栏、Finder 窗口（侧栏、图标视图、状态栏）、日历、天气、股票小组件和完整 Dock，`pageerror` 为空。
 
+**原帖与过程证据**（仓库所有者提供原帖链接后补充，数据通过 fxtwitter API 读取）：
+
+- 作者 Max Weinbach（@mweinbach）。
+- 2026-07-16 18:49 UTC 发帖（[原帖](https://x.com/mweinbach/status/2077827886149439547)）：“I asked a Kimi K3 Max agent swarm to recreate macOS 27 with real Liquid Glass and native apps in web browser and it's been going for 3 hours”。
+- 同日 22:09 UTC 发[完成帖](https://x.com/mweinbach/status/2077878247920951400)：“It finally finished … Used 60% of my monthly Kimi usage on it”。
+- **耗时**：媒体普遍报道“约 3 小时 20 分”，这是两条帖子的间隔；但第一条帖子发出时已经跑了 3 小时，总耗时应该在 6 小时以上。这是推断，没有精确的开始时间。
+- **第一条帖子附带的运行截图**（手机上的 Kimi App，状态栏时间 2:48，与发帖时间 18:49 UTC 按美东时间吻合）：
+  - 顶部显示 “Kimi K3 Swarm · Max”“Agent Swarm | 3 agents running”：**当时只有 3 个 agent 在运行**，不是几百个。
+  - 主 agent 自己在做**集成补丁**：“Now applying all three integration patches (Spotlight providers, real-data widgets, real calendar boot alerts)”。步骤包括 “Patch search.ts and MacO…”“Rewire Calendar Reminders Stocks Widgets to R…”“Rewire widgets to real app…”“Apply Code Patches and Remove Demo Mail Blo…”。
+  - 然后是**构建通过才提交**：“Integration patches built green. Committing, then waiting for the final three builders.”，步骤名是 “Commit Integration Fixes on Final-Build …”，随后显示 “Waiting for agent message”。
+
+从截图可以读出的工作流：
+
+1. 子 agent 被称为 **builder**，各自建模块；主 agent 负责集成，并通过消息等待 builder 交付。
+2. **先占位、后接线**：模块先用演示数据（demo）独立做完；集成阶段由主 agent 把小组件、Spotlight 这些跨模块功能改接到真实的应用数据上，同时删掉演示占位。
+3. **跨模块改动归主 agent**：Spotlight 的搜索来源、桌面小组件这类需要读多个应用数据的地方，由主 agent 亲自打补丁，而不是交给某个 builder。
+4. **构建通过是提交的前提**，并且在一个 Final-Build 分支上用 git 提交。
+5. 这张截图只是一个时刻，不代表全程的并发数；swarm 在整个过程中最多用了多少 agent，仍然未知。
+
 **局限**：
 
-- 打包产物里**没有任何能直接证明使用了多 agent 的痕迹**（泰坦尼克号至少还有 `Owner:` 注释）。“多个 subagent 完成”目前只来自传言，结构上可行，但没有证实。
+- 打包产物本身没有多 agent 的痕迹。使用了 agent swarm 这一点来自作者本人的原帖和截图，具体分工只能从截图里的只言片语推断。
 - 没有逐个试用 45 个应用。
 - 行数统计是下限。
 
@@ -142,6 +161,7 @@ src/
 | R7 | **收口核对**：lead 按契约逐项核对接口和所有权有没有越界，再走常规的 `scripts/check.sh` 与 PR 流程 |
 | R8 | **可插拔三件套**（来自 macOS 27）：模块数量多时，契约里固定注册表结构、每个模块独立的状态命名空间、命名事件频道，子 agent 只能通过这三者和外壳交互 |
 | R9 | **所有权粒度可以放大到目录**：一个子 agent 负责一个目录；共享代码只能放在“分类内 shared”或外壳里，并且写明归属 |
+| R10 | **先占位、后接线**（来自 macOS 27 原帖截图）：子 agent 对其他模块的依赖一律用契约里约定的占位数据；跨模块接线（搜索、小组件这类读多个模块数据的地方）留给 lead 在集成阶段统一完成，每轮集成构建通过才提交 |
 
 可能的落地方式（普通 PR 与规则类 PR 分开）：
 

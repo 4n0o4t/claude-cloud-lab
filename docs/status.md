@@ -51,5 +51,5 @@
 
 ## 下一步
 
-1. 所有者决定多 Agent 候选规则 R1–R9 是否采纳、是否用迷你版泰坦尼克号试点（见 `experiments/2026-09-24-multi-agent-workflows/README.md`）。
+1. 所有者决定多 Agent 候选规则 R1–R10 是否采纳、是否用迷你版泰坦尼克号试点（见 `experiments/2026-09-24-multi-agent-workflows/README.md`）。
 2. 否则等待仓库所有者给出下一个实验或子项目任务。
