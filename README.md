@@ -23,6 +23,7 @@ This repo holds experiments, prototypes and small tools built by Claude in Claud
 │  ├─ guides/           # 按任务加载的工作细则
 │  ├─ decisions/        # 编号决策记录（ADR）
 │  ├─ plans/            # 阶段计划与 checklist
+│  ├─ diary/            # 按天的工作日记
 │  └─ templates/        # 实验、子项目、决策、review、计划模板
 ├─ experiments/         # 一次性实验，每个目录自带 README
 ├─ projects/            # 长期子项目，每个目录自带 README
