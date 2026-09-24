@@ -36,6 +36,7 @@
 ## 待确认
 
 - `projects/titanic-1912/` 的原作者署名方式与是否附带具体许可证。
+- 授权人是否就是公开部署 `titanic-opus-5-2.vercel.app` 的作者（出处追查见 `experiments/2026-09-24-threejs-titanic/README.md`）。
 
 ## 恢复入口
 

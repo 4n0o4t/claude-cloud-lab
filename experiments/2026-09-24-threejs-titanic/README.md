@@ -92,6 +92,25 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory titanic-source/dist &
 
 据此推断：它很可能是**多个 AI Agent 分模块并行编写**，再由集成方按模板拼成单个 HTML。模块之间只通过共享命名空间 `TT`、`TT.register(name, …)` 和故事状态 `TT.S` 交互，这正是多 Agent 协作时常用的“契约 + 分工”结构。
 
+### 出处追查（2026-09-24 稍晚，网络搜索）
+
+- **公开部署**：搜索片名找到 <https://titanic-opus-5-2.vercel.app/>。它的 HTML 去掉 CR 后与本仓库 `projects/titanic-1912/original/titanic.html` 逐字节相同（sha256 前 16 位 `da5d74d2b89d432e`）。本仓库版本多出的 10,081 字节正好是 10,081 个 CR。可以确认两者是同一件作品，群聊里流传的是这份部署的 CRLF 副本。
+- **“opus-5-2”**：
+  - 部署子域名暗示它和 Claude “Opus 5.2” 有关。
+  - 网上对 Opus 5.2 说法矛盾：kie.ai 说它 2026-09-15 发布；CellCog 说它只是 2026-09-14 起流传六天的传闻代号，后来正式发布为 Opus 5.5（2026-09-22），Anthropic 文档从未出现过 5.2。
+  - kie.ai 在“Opus 5.2 早期示例”里提到过“a five-minute Titanic visualization”，但没有给出作者、链接或做法。
+  - **没有找到作者本人的原帖、仓库或工作流说明。**
+- **同期类似作品**（Opus 5.5 发布周，都是纯代码、无外部素材的影片或场景）：
+  - Chris Riley（@LCSlates）的 80 秒玻璃瓷砖短片：单个 HTML、WebGL2、不用库，也没有图片、字体或音频文件。
+  - Michael Guo（@Michaelzsguo）的美国 250 年沙画动画。
+  - 一部“4 个 agent、约 90 分钟”的四分钟纯代码影片（只有二手报道，未找到原帖）。
+  - 来源：favtutor、orcarouter 等聚合文章，均未逐一核实原帖。
+- **公开的同类工作流**：
+  - Claude Code 官方的 agent teams：一个 lead 加若干 teammates，共享任务列表并互发消息；实验功能，需 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`；官方建议“每个 teammate 负责不同文件”。
+  - 社区的“契约式设计”（contract-based design）：先由一个 agent 写需求与接口契约，多个 agent 按契约并行实现，最后由一个 agent 集成并核对。
+  - 本作的 `Owner: xxx agent`、`CONTRACT.md`、`<!--HEAD-->`/`<!--BODY-->` 模板槽位与这两种做法高度吻合，但仍属推断。
+- **对授权的影响**：`projects/titanic-1912/` 的授权来自仓库所有者转述“作者朋友已授权”。如果这位朋友就是上述 Vercel 部署的作者，授权成立；如果只是转发者，需要找到真正的作者。已记入 `docs/status.md` 待确认。
+
 ## 结论
 
 - 结论：
