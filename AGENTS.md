@@ -39,7 +39,8 @@
 - `docs/guides/`：按任务加载的工作细则。
 - `docs/decisions/`：编号决策记录（ADR），只追加，被替代时标注而不是删除。
 - `docs/plans/`：阶段计划与 checklist。
-- `experiments/`：自包含的实验与原型，每个目录自带 README。
+- `experiments/`：一次性实验与原型，每个目录自带 README。
+- `projects/`：长期维护的子项目，每个目录自带 README，依赖只在子项目内声明。
 - `temp/`：可清理的任务产物、日志和截图，被 git 忽略。
 
 ## Git

@@ -96,6 +96,22 @@ else
   pass "shell 脚本语法正确"
 fi
 
+# 6. 每个实验和子项目目录都有 README.md
+no_readme=()
+declare -A seen_dirs=()
+for f in "${existing[@]}"; do
+  [[ $f =~ ^(experiments|projects)/([^/]+)/ ]] || continue
+  seen_dirs["${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"]=1
+done
+for d in "${!seen_dirs[@]}"; do
+  [[ -f $d/README.md ]] || no_readme+=("$d")
+done
+if ((${#no_readme[@]})); then
+  fail "以下目录缺少 README.md：$(printf '%s ' "${no_readme[@]}")"
+else
+  pass "实验与子项目目录均有 README"
+fi
+
 if ((failures)); then
   printf '\n%d 项检查失败。\n' "$failures"
   exit 1

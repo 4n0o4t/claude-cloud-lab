@@ -28,6 +28,17 @@
 | 网络 | 出站 HTTPS 经代理；受限时先查环境文档与代理状态 | 环境说明 | 2026-09-24 |
 | 验证入口 | `bash scripts/check.sh` | README | 2026-09-24 |
 
+## 仓库设置
+
+由仓库所有者在 GitHub 网页上配置；Claude 没有修改仓库设置的工具，只能读取结果。
+
+| 项目 | 当前设置 | 证据 | 最后核验 |
+| --- | --- | --- | --- |
+| 默认分支 | `main` | 分支列表 | 2026-09-24 |
+| `main` 保护 | Ruleset `protect-main`：禁止删除、禁止 force push、合并前必须走 PR，Required approvals 为 0（PR 以所有者账号创建，无法自我批准） | 分支 API `protected: true`；网页编辑被拒 | 2026-09-24 |
+| PR 合并方式 | Create a merge commit（保留原提交 hash，会话分支可 fast-forward 到 `main` 继续工作） | PR #1 合并结果 `10c6008` | 2026-09-24 |
+| 任务派发 | GitHub Issue；PR 描述写 `Closes #N` | Issue #2 | 2026-09-24 |
+
 ## 默认选择
 
 沿用 AWZ Workflow 的默认值：
