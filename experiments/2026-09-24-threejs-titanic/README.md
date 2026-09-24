@@ -109,7 +109,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory titanic-source/dist &
   - Claude Code 官方的 agent teams：一个 lead 加若干 teammates，共享任务列表并互发消息；实验功能，需 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`；官方建议“每个 teammate 负责不同文件”。
   - 社区的“契约式设计”（contract-based design）：先由一个 agent 写需求与接口契约，多个 agent 按契约并行实现，最后由一个 agent 集成并核对。
   - 本作的 `Owner: xxx agent`、`CONTRACT.md`、`<!--HEAD-->`/`<!--BODY-->` 模板槽位与这两种做法高度吻合，但仍属推断。
-- **对授权的影响**：`projects/titanic-1912/` 的授权来自仓库所有者转述“作者朋友已授权”。如果这位朋友就是上述 Vercel 部署的作者，授权成立；如果只是转发者，需要找到真正的作者。**结果**：确认是转发者；所有者决定保留收录并把仓库转为私有，此事已定（见 `docs/status.md`“已定事项”）。
+- **对授权的影响**：`projects/titanic-1912/` 的授权来自仓库所有者转述“作者朋友已授权”。如果这位朋友就是上述 Vercel 部署的作者，授权成立；如果只是转发者，需要找到真正的作者。**结果**：确认是转发者；所有者决定保留收录、仓库保持公开，此事已定（见 `docs/status.md`“已定事项”）。
 
 ## 结论
 
