@@ -13,3 +13,4 @@
 - `projects/` 长期子项目目录约定与子项目模板；`scripts/check.sh` 检查每个实验和子项目目录都有 README（#2）。
 - `scripts/check.sh` 仓库卫生检查：必需文件、禁止跟踪路径、疑似 secret、Markdown 相对链接、shell 语法。
 - GitHub Actions `check` 工作流：每个 PR 与合并进 `main` 时自动运行 `scripts/check.sh`。
+- 分级托管（决策 0002）：普通 PR 检查通过后自动合并，规则类 PR 人工合并。

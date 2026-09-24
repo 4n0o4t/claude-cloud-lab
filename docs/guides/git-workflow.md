@@ -6,7 +6,7 @@
 
 - `main` 是稳定主线。
 - 云端会话在分配的 `claude/*` 分支开发；不要推送到未被授权的其他分支。
-- 一个会话分支对应一段可解释的工作；合并回 `main` 由用户决定（PR 或直接合并），不要长期漂着。
+- 一个会话分支对应一段可解释的工作；经 PR 合并回 `main`（按下方“合并与托管”分级处理），不要长期漂着。
 - 分支对应的 PR 已合并后，后续工作从最新 `main` 重新起分支，不在已合并历史上堆叠。
 
 推送：
@@ -16,6 +16,25 @@ git push -u origin <branch>
 ```
 
 仅在网络错误时按 2s、4s、8s、16s 退避重试，最多 4 次。
+
+## 合并与托管
+
+`main` 受 Ruleset `protect-main` 保护：禁止删除、禁止 force push、必须经 PR、必须通过 `repo hygiene` 检查。合并方式统一用 **Create a merge commit**。
+
+分级托管（决策见 `../decisions/0002-tiered-auto-merge.md`）：
+
+| 类型 | 判定 | 做法 |
+| --- | --- | --- |
+| 普通 PR | 不触及下方任何规则类路径 | 开 PR 后立即开启 auto-merge（`MERGE`）；检查通过即自动合并 |
+| 规则类 PR | 触及 `AGENTS.md`、`CLAUDE.md`、`.github/`、`scripts/check.sh`、`.gitignore`、`LICENSE`、`NOTICE`、`docs/decisions/` 任一 | 不开启 auto-merge；标题加 `[需人工合并]`；描述里说明改了哪条规则、为什么 |
+
+操作细节：
+
+1. 开 PR 前用 `git diff --name-only origin/main...HEAD` 判定类型；只要命中一个规则类路径就按规则类处理。
+2. 规则类改动和普通改动分成两个 PR，不要混提。
+3. 普通 PR 开启 auto-merge 若因“PR 已可合并”失败（检查跑得比开启快），且 `repo hygiene` 已在当前 head 上通过、无冲突，直接以 merge commit 方式合并。
+4. 检查失败时 auto-merge 不会触发：先修复并推送，不要关闭 auto-merge 绕过。
+5. 合并后把会话分支 fast-forward 到最新 `main` 再继续工作。
 
 ## Commit subject
 

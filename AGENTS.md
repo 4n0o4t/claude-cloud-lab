@@ -45,7 +45,11 @@
 
 ## Git
 
-- 稳定主线为 `main`；云端会话在分配的 `claude/*` 分支开发，推送用 `git push -u origin <branch>`，合并回 `main` 由用户决定。
+- 稳定主线为 `main`（受 Ruleset 保护，只能经 PR 合并，且必须通过 `repo hygiene` 检查）；云端会话在分配的 `claude/*` 分支开发，推送用 `git push -u origin <branch>`。
+- 分级托管（见 `docs/decisions/0002-tiered-auto-merge.md`）：
+  - **普通 PR**（实验、子项目、普通文档）：开 PR 后开启 auto-merge（merge commit 方式），检查通过即自动合并。
+  - **规则类 PR**：只要改动涉及 `AGENTS.md`、`CLAUDE.md`、`.github/`、`scripts/check.sh`、`.gitignore`、`LICENSE`、`NOTICE` 或 `docs/decisions/` 中任一路径，就不开启 auto-merge，PR 标题加 `[需人工合并]`，等用户亲手合并。
+  - 规则类改动与普通改动分开提 PR，不要混在一起借道自动合并。
 - commit 按 logical change 切分；subject 格式 `type: 中文一句话概括`，body 使用 `1. **关键词**：具体改动点`。
 - commit 末尾保留 Claude Code 要求的署名 trailer（`Co-Authored-By`、`Claude-Session`）。这是对 AWZ“禁止 AI attribution”规则的有意偏离：本仓库作者就是 Claude，如实署名。
 - 细则见 `docs/guides/git-workflow.md`。
