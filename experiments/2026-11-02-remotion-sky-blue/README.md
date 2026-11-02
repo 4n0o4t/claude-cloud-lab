@@ -107,10 +107,19 @@ npx skills experimental_install
   - ASR 回听：Gemini 版 10 句只有同音字差异（“瑞利→瑞丽”“散射得→散射的”），没有出现 Kokoro 版那样被 Whisper 误听的词。这只间接说明咬字可能更清晰，不代表听感更好。
   - 单句请求返回 24kHz 单声道 WAV（带 RIFF 头），首句 118 个音频 token。
   - 音质与自然度同样**未经人耳评估**，A/B 片段已交所有者试听。
+- 第四轮（3D 精修版 `SunsetHero`，官方 Agent Skills）：
+  - 成片 24.6 秒（`ffprobe`：H.264 1920×1080 + AAC），平均音量 -20.5 dB、峰值 -0.8 dB。
+  - **软件 WebGL 很慢**：容器没有 GPU，744 帧整片渲染 11 分 13 秒（约 1 帧/秒），而 2D 版约 0.06 秒/帧。迭代时用 `remotion still --scale=0.5` 单帧检查（约 9 秒/帧，含打包）。
+  - **WebGL 后端实测**：官方 skill 建议的 `angle` 与 `swiftshader` 都报 `Error creating WebGL context`，只有 `swangle` 可用；已作为 `remotion.config.ts` 默认值，有 GPU 时可用 `REMOTION_GL=angle` 覆盖。
+  - **官方 `lightLeak()` 漏光**在 swangle 下整屏发白（进度为 0 的帧也是白屏），根因未查明；改用 `fade()` 交叉淡化，并卸载 `@remotion/effects`。
+  - `Interactive.create` 包装的组件必须接受 `style` 参数，否则 TS 报 `Type 'FC<{}>' is not assignable to type 'never'`（官方示例写了，容易漏）。
+  - 关键帧迭代 3 轮：城市灯光成片糊状、晨昏线橙带过重、标题压地球 → 调噪声阈值与镜头；正午天空发白、中段过曝 → 改用 three.js 官方示例的日落参数（浊度 10、瑞利 3、G 0.7）并按高度角分段曝光；太阳落到地平线下后天空全黑 → 太阳停在 0.8°；近景山脊下方漏出地下天空 → 山脊底边压深。
+  - 仍有不足：正午天空偏白、不够饱和；太空镜头推近后地球顶部出画。
+  - Skills 的作用：3D 规则（ThreeCanvas、禁 useFrame、帧驱动）、`style` 内联插值与 `Easing.bezier` 写法、`TransitionSeries` 用法都直接可用；但它管“规范”不管“审美”，画面精致度来自真实散射着色器、分层空气透视、数据面板和配乐，这些需要自己设计和看帧打磨。另外 skill 默认“别渲染、开 Studio 给用户预览”，云端无头环境不适用。
 - `--browser-executable` 需要指向 `chrome-headless-shell-linux64/chrome-headless-shell`，路径写错时 Remotion 直接报错，不会回退。
 
 ## 结论
 
 - 结论：Remotion 在云端容器里开箱可用；加上开源 TTS 后，“旁白脚本 → 逐句音频 → 时长 manifest → 时间轴”整条链在无 GPU、无 API Key 的条件下跑通，改一句旁白只需重做那一句并自动顺延后续画面。Agent 写“确定性的 React 画面 + 时间轴表”很顺手，和泰坦尼克号实验里“状态是时间的纯函数”是同一种思路。真正的质量关卡是**看关键帧**（4 个视觉 bug 都是类型检查和渲染无法发现的）和**ASR 回听**（Agent 自己听不到声音，用转写比对代替）。
 - 可信度与局限：只做了纯矢量画面的短片，配音只验证了文字准确与时间对齐，没有人耳评估音质；没有试商业 TTS（ElevenLabs 等）对比、BGM、词级字幕高亮、真实录屏素材、`@remotion/transitions` 等官方包，也没试 Remotion 官方 Agent Skills。科普内容为常识性物理知识，“约 6 倍”按 (700/450)⁴ 计算。
-- 后续：可选方向——BGM 与旁白闪避（ducking）；用 whisper 词级时间戳做逐字高亮字幕；用 `@remotion/transitions` 替代手写淡入淡出；做 9:16 竖版布局；把关键帧 contact sheet 做成 `npm run qa` 脚本。
+- 后续：3D 精修版可继续调正午天空饱和度、太空镜头构图，并把同样手法推广到其他幕；有 GPU 的机器渲染会快一个数量级。其他可选方向——BGM 与旁白闪避（ducking）；用 whisper 词级时间戳做逐字高亮字幕；用 `@remotion/transitions` 替代手写淡入淡出；做 9:16 竖版布局；把关键帧 contact sheet 做成 `npm run qa` 脚本。
