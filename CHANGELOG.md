@@ -9,7 +9,13 @@
 ### Added
 
 - `docs/diary/` 按天的工作日记目录与约定。
+- 实验 `experiments/2026-09-24-threejs-titanic/`：拆解单文件 Three.js 泰坦尼克号动画。
 - 第一个子项目 `projects/titanic-1912/`：收录 Three.js 泰坦尼克号短片的原始单文件与模块化还原工程。
+- 实验 `experiments/2026-09-24-multi-agent-workflows/`：多 Agent 工作流调研（含 macOS 27 复刻案例），提出候选规则 R1–R10，尚未采纳。
+
+### Changed
+
+- `docs/references.md` 环境基线于 2026-11-02 重新核验（Python 3.13、uv 0.11、Node 22.23 等）。
 
 ## [0.1.0] - 2026-09-24
 
