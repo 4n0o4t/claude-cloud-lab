@@ -45,6 +45,12 @@ src/voice-manifest.json     每句 durationMs（提交，时间轴依赖它）
 
 - 音频用 `@remotion/media` 的 `<Audio>`，每句放在自己的 `<Sequence>` 里。
 
+### TTS 引擎对比（第三轮）
+
+- `tools/tts.py --engine gemini` 调用 Gemini 3.8 Flash TTS（Interactions API，`speech_metadata.style` 设为“亲切、轻快的科普节目主持人……”，音色 `Kore`），密钥读环境变量 `GEMINI_API_KEY`。
+- 每个引擎的音频和 manifest 分开存（`public/voice/zh-CN-gemini/`、`src/voice-manifest.gemini.json`），Remotion 注册两个 Composition：`SkyBlue`（Kokoro）与 `SkyBlueGemini`，同一套画面、各自的时间轴。
+- `VOICES.gemini.partial = true`：旁白没生成全时只渲染到第一个缺旁白的幕之前，方便配额不足时先做局部对比。
+
 ## 复现
 
 ```bash
@@ -79,6 +85,13 @@ npm run render          # 输出到仓库根目录 temp/sky-blue.mp4（被 git �
   - 关键帧按 beat 时间点抽取，确认画面动作与台词同步。
   - 坑：faster-whisper 搭配新版 PyAV 时 `decode_audio` 报 `metadata_errors` 参数错误，改为用 soundfile 读成 numpy 数组再传入。
   - 音质与自然度**未经人耳评估**：Agent 无法试听，只能用 ASR 转写确认“念对了字”，好不好听待所有者反馈。
+- 第三轮（Gemini 3.8 Flash TTS 对比）：
+  - **免费档每天只有 10 次请求**（429 返回 `limit: 10 requests per day on Free Tier`，`retry-after` 约 17 小时）。一句一个请求的做法在免费档下一天做不完 14 句；只生成了前 11 句，所以对比只覆盖前 4 幕。`tts.py` 现在遇到日配额耗尽会保存已完成的句子后退出，下次只补缺的句子。
+  - 改进思路（未实现）：免费档下应改成“一幕一个请求”（6 次即可覆盖全片），再用 whisper 词级时间戳或静音切分把整段拆回逐句 beat。
+  - 前 4 幕旁白：Gemini 63.7 秒 vs Kokoro（1.1 倍速）60.3 秒；平均音量 -15.8 dB vs -19.6 dB，峰值都约 -0.8 dB。
+  - ASR 回听：Gemini 版 10 句只有同音字差异（“瑞利→瑞丽”“散射得→散射的”），没有出现 Kokoro 版那样被 Whisper 误听的词。这只间接说明咬字可能更清晰，不代表听感更好。
+  - 单句请求返回 24kHz 单声道 WAV（带 RIFF 头），首句 118 个音频 token。
+  - 音质与自然度同样**未经人耳评估**，A/B 片段已交所有者试听。
 - `--browser-executable` 需要指向 `chrome-headless-shell-linux64/chrome-headless-shell`，路径写错时 Remotion 直接报错，不会回退。
 
 ## 结论

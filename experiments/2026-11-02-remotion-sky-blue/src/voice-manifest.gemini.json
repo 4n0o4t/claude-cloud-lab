@@ -1,0 +1,52 @@
+{
+  "engine": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "style": "亲切、轻快的科普节目主持人，吐字清晰，语速适中，像在给朋友讲一个有趣的知识",
+  "lines": {
+    "hook-010": {
+      "durationMs": 5560,
+      "hash": "6b6bea8aafdfbc94"
+    },
+    "white-010": {
+      "durationMs": 5280,
+      "hash": "1b6e31a7bb0540fc"
+    },
+    "white-020": {
+      "durationMs": 6800,
+      "hash": "67dcc130937847c1"
+    },
+    "scatter-010": {
+      "durationMs": 5800,
+      "hash": "786bd754c4c323c4"
+    },
+    "scatter-020": {
+      "durationMs": 5280,
+      "hash": "dd70b527d73c0a36"
+    },
+    "scatter-030": {
+      "durationMs": 8720,
+      "hash": "86628bf541faf182"
+    },
+    "violet-010": {
+      "durationMs": 6240,
+      "hash": "d297f274d83d69f4"
+    },
+    "violet-020": {
+      "durationMs": 4120,
+      "hash": "9ff264c8a2f8d330"
+    },
+    "violet-030": {
+      "durationMs": 3200,
+      "hash": "f0b33283928b5ffb"
+    },
+    "violet-040": {
+      "durationMs": 5280,
+      "hash": "dcd806f30f5a481e"
+    },
+    "sunset-010": {
+      "durationMs": 6200,
+      "hash": "58a1aa2a6be49386"
+    }
+  }
+}
