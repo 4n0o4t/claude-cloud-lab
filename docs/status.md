@@ -3,8 +3,8 @@
 ## 当前阶段
 
 - 阶段：discover
-- 状态：基线就绪，第一个实验已毕业为子项目 `projects/titanic-1912/`，等待下一个任务
-- 最近收口：2026-09-24，完成多 Agent 工作流调研（`experiments/2026-09-24-multi-agent-workflows/`），候选规则待所有者决定
+- 状态：**暂停**。仓库已整理到可随时恢复的状态；所有者 2026-11-02 起先去探究另一个项目，本仓库无进行中的任务
+- 最近收口：2026-11-02，仓库整理（环境基线重新核验、CHANGELOG 补齐、本文件更新）；上一次实质工作是 2026-09-24 的多 Agent 工作流调研（`experiments/2026-09-24-multi-agent-workflows/`）
 - Branch：`main`（默认分支，2026-09-24 由仓库所有者从初始化提交 `6cdc906` 创建）
 - 环境基线：已探测，见 `docs/references.md`
 
@@ -25,7 +25,8 @@
 - 已完成：第一个实验 `experiments/2026-09-24-threejs-titanic/`，拆解单文件 Three.js 泰坦尼克号动画。
 - 已完成：作者授权公开后，第一个子项目 `projects/titanic-1912/` 收录原始单文件（逐字节保存）与还原 Vite 工程；未指定许可证，不适用仓库 MIT。
 - 已验证事实：普通 PR 自动合并可用（PR #6 检查通过后自动合并）；`repo hygiene` 为必须通过的检查（PR #5 检查运行中处于 `blocked`）。
-- 已验证事实：`bash scripts/check.sh` 全部通过；README 检查的失败路径经负向测试确认。
+- 已验证事实：`bash scripts/check.sh` 全部通过（2026-11-02 复核）；README 检查的失败路径经负向测试确认。
+- 已验证事实：2026-11-02 重新探测环境基线，容器镜像已升级（Python 3.13、uv 0.11、Node 22.23），详见 `docs/references.md`。
 - 已验证事实：`projects/titanic-1912/source` 不依赖提交外的 `dist/`，干净复制后 `npm ci && npm run build` 成功，新构建在无头 Chromium 中渲染无错误。
 - 已废弃路线：AWZ 的 room ledger、owner 表、handoff 模板、Reference Library 与 `.awz/references.json`——单一维护者且无持久本机，不需要。
 
@@ -35,7 +36,7 @@
 
 ## 待确认
 
-暂无。
+- 多 Agent 候选规则 R1–R10 是否采纳、是否用迷你版泰坦尼克号试点（见 `experiments/2026-09-24-multi-agent-workflows/README.md` 的“候选规则”“试点建议”）。所有者暂未决定，不必主动追问；所有者回来时可提一句。
 
 ## 已定事项（不再追问所有者）
 
@@ -51,5 +52,5 @@
 
 ## 下一步
 
-1. 所有者决定多 Agent 候选规则 R1–R10 是否采纳、是否用迷你版泰坦尼克号试点（见 `experiments/2026-09-24-multi-agent-workflows/README.md`）。
-2. 否则等待仓库所有者给出下一个实验或子项目任务。
+1. 等待所有者从另一个项目回来，或给出下一个实验 / 子项目任务。
+2. 恢复时先重新探测环境基线有无变化，再看“待确认”里的候选规则是否有了结论。
