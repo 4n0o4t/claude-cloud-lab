@@ -17,4 +17,4 @@
 | --- | --- | --- | --- |
 | [`2026-09-24-threejs-titanic`](2026-09-24-threejs-titanic/README.md) | 单文件 Three.js 泰坦尼克号动画如何组织、还原工程是否忠实 | 完成 | 还原忠实且可运行；核心是“故事状态为时间的纯函数”，疑似多 Agent 分模块编写 |
 | [`2026-09-24-multi-agent-workflows`](2026-09-24-multi-agent-workflows/README.md) | 从 AI 自组织大项目提炼可用的多 Agent 工作流 | 完成 | 共同骨架是“契约 + 文件所有权 + 共享状态 + 集成核对”；补充 macOS 27 案例（一目录一 owner + 注册表）；提出 10 条候选规则与迷你泰坦尼克号试点，待采纳 |
-| [`2026-11-02-remotion-sky-blue`](2026-11-02-remotion-sky-blue/README.md) | 用 Remotion 从零做一支科普短片，体验 Agent 驱动的程序化视频 | 完成 | 云端容器开箱可用，50 秒片约 1 分 45 秒渲染完；关键质量关卡是看关键帧（4 个视觉 bug 类型检查与渲染都发现不了） |
+| [`2026-11-02-remotion-sky-blue`](2026-11-02-remotion-sky-blue/README.md) | 用 Remotion 从零做一支科普短片（含 AI 配音），体验 Agent 驱动的程序化视频 | 完成 | 云端容器开箱可用；开源 Kokoro 中文 TTS 在 CPU 上跑通“旁白时长驱动时间轴”；质量关卡是看关键帧 + ASR 回听 |

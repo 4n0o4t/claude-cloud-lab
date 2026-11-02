@@ -1,6 +1,9 @@
 import React from 'react';
 import {AbsoluteFill, interpolateColors, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Captions, FONT, Heading, ease, wavePath} from './lib';
+import {Beats, beat, captionLines} from './timeline';
+
+type SceneProps = {beats: Beats};
 
 const SKY_TOP = '#2f7fd6';
 const SKY_BOTTOM = '#9fd3f5';
@@ -11,7 +14,7 @@ const Sky: React.FC<{top?: string; bottom?: string}> = ({top = SKY_TOP, bottom =
 );
 
 /* ---------- 1. 开场 ---------- */
-export const Hook: React.FC = () => {
+export const Hook: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const s = spring({frame: f - 10, fps, config: {damping: 14}});
@@ -40,7 +43,7 @@ export const Hook: React.FC = () => {
         </span>
       </Heading>
       <Heading top={560} size={44} opacity={sub}>
-        一分钟看懂“瑞利散射”
+        带你看懂“瑞利散射”
       </Heading>
     </AbsoluteFill>
   );
@@ -57,11 +60,12 @@ const SPECTRUM = [
   {name: '紫', nm: 400, color: '#9b4dff'},
 ];
 
-export const WhiteLight: React.FC = () => {
+export const WhiteLight: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
   const beam = ease(f, 10, 50);
   const prism = ease(f, 0, 20);
-  const labels = ease(f, 130, 160);
+  const w2 = beat(beats, 'white-020').from;
+  const labels = ease(f, w2, w2 + 30);
   const px = 900;
   return (
     <AbsoluteFill>
@@ -109,21 +113,18 @@ export const WhiteLight: React.FC = () => {
           </marker>
         </defs>
       </svg>
-      <Captions
-        lines={[
-          {from: 15, to: 130, text: '阳光其实是各种颜色的光混在一起'},
-          {from: 130, to: 270, text: '不同颜色波长不同：红光波长长，蓝光、紫光波长短'},
-        ]}
-      />
+      <Captions lines={captionLines(beats)} />
     </AbsoluteFill>
   );
 };
 
 /* ---------- 3. 瑞利散射 ---------- */
-export const Scattering: React.FC = () => {
+export const Scattering: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
-  const partA = 1 - ease(f, 190, 215);
-  const partB = ease(f, 210, 235);
+  const L = beat(beats, 'scatter-020').from; // 说到“蓝光/红光”时出标签
+  const B = beat(beats, 'scatter-030').from; // 说到“瑞利散射”时切到柱状图
+  const partA = 1 - ease(f, B - 20, B);
+  const partB = ease(f, B - 5, B + 20);
   const head = ease(f, 0, 70, 0, 1920);
   const mx = 960;
   const lanes = [
@@ -136,7 +137,7 @@ export const Scattering: React.FC = () => {
     r: 4 + random(`r${i}`) * 4,
   }));
   const ratio = (700 / 450) ** 4; // ≈ 5.85
-  const grow = ease(f, 240, 300);
+  const grow = ease(f, B + 25, B + 85);
   return (
     <AbsoluteFill>
       <Sky top={NIGHT} bottom="#1b2a52" />
@@ -197,7 +198,7 @@ export const Scattering: React.FC = () => {
                   y={l.y + 110}
                   fill="#fff"
                   textAnchor="middle"
-                  opacity={ease(f, 90, 110)}
+                  opacity={ease(f, L, L + 20)}
                   style={{fontFamily: FONT, fontWeight: 700, fontSize: 40}}
                 >
                   {l.label}
@@ -232,32 +233,27 @@ export const Scattering: React.FC = () => {
             y={820 - 520 * grow - 24}
             fill="#fff"
             textAnchor="middle"
-            opacity={ease(f, 290, 310)}
+            opacity={ease(f, B + 75, B + 95)}
             style={{fontFamily: FONT, fontWeight: 900, fontSize: 56}}
           >
             ≈ {(ratio * grow).toFixed(1)} 倍
           </text>
         </svg>
       </AbsoluteFill>
-      <Captions
-        lines={[
-          {from: 10, to: 200, text: '空气分子比光的波长小得多，会把光散射到四面八方'},
-          {from: 215, to: 360, text: '这叫瑞利散射：波长越短，散射越强，蓝光被散射得约是红光的 6 倍'},
-        ]}
-      />
+      <Captions lines={captionLines(beats)} />
     </AbsoluteFill>
   );
 };
 
 /* ---------- 4. 为什么不是紫色 ---------- */
-export const WhyNotViolet: React.FC = () => {
+export const WhyNotViolet: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const q = spring({frame: f - 5, fps, config: {damping: 13}});
   const cards = [
-    {n: '1', text: '阳光里的紫光，本来就比蓝光少', color: '#9b4dff'},
-    {n: '2', text: '人眼对紫光不太敏感', color: '#6f6bff'},
-    {n: '3', text: '各色散射光混在一起，看起来就是天蓝色', color: '#2f8bff'},
+    {n: '1', text: '阳光里的紫光，本来就比蓝光少', color: '#9b4dff', id: 'violet-020'},
+    {n: '2', text: '人眼对紫光不太敏感', color: '#6f6bff', id: 'violet-030'},
+    {n: '3', text: '各色散射光混在一起，看起来就是天蓝色', color: '#2f8bff', id: 'violet-040'},
   ];
   return (
     <AbsoluteFill>
@@ -266,8 +262,8 @@ export const WhyNotViolet: React.FC = () => {
         紫光散射更强，为什么天不是紫的？
       </Heading>
       <div style={{position: 'absolute', top: 330, left: 260, right: 260}}>
-        {cards.map((c, i) => {
-          const a = spring({frame: f - 80 - i * 35, fps, config: {damping: 16}});
+        {cards.map((c) => {
+          const a = spring({frame: f - beat(beats, c.id).from, fps, config: {damping: 16}});
           return (
             <div
               key={c.n}
@@ -307,20 +303,16 @@ export const WhyNotViolet: React.FC = () => {
           );
         })}
       </div>
-      <Captions
-        lines={[
-          {from: 10, to: 80, text: '紫光波长更短，按理说散射得更厉害'},
-          {from: 80, to: 270, text: '但阳光中紫光较少、人眼又不敏感，最终我们看到的是蓝色'},
-        ]}
-      />
+      <Captions lines={captionLines(beats)} />
     </AbsoluteFill>
   );
 };
 
 /* ---------- 5. 日落 ---------- */
-export const Sunset: React.FC = () => {
+export const Sunset: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
-  const k = ease(f, 110, 230); // 0 = 正午，1 = 傍晚
+  const K = beat(beats, 'sunset-020').from; // 说到“傍晚”时太阳开始下落
+  const k = ease(f, K, K + 150); // 0 = 正午，1 = 傍晚
   const theta = ((12 + 72 * k) * Math.PI) / 180; // 太阳偏离天顶的角度
   const C = {x: 960, y: 2500};
   const R = 1800; // 地面半径，地表顶点在 y=700
@@ -375,23 +367,20 @@ export const Sunset: React.FC = () => {
       <Heading top={70} size={60}>
         {k < 0.5 ? '正午：阳光穿过的大气很薄' : '傍晚：阳光斜穿厚厚的大气'}
       </Heading>
-      <Captions
-        lines={[
-          {from: 10, to: 120, text: '正午，阳光穿过的大气路程短，散射出的蓝光铺满天空'},
-          {from: 130, to: 300, text: '傍晚光路变长，蓝光沿途几乎被散射殆尽，剩下的红橙光染红了晚霞'},
-        ]}
-      />
+      <Captions lines={captionLines(beats)} />
     </AbsoluteFill>
   );
 };
 
 /* ---------- 6. 总结 ---------- */
-export const Outro: React.FC = () => {
+export const Outro: React.FC<SceneProps> = ({beats}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const a = spring({frame: f - 5, fps, config: {damping: 14}});
-  const b = ease(f, 40, 60);
-  const c = ease(f, 75, 95);
+  const o1 = beat(beats, 'outro-010').from;
+  const o2 = beat(beats, 'outro-020').from;
+  const a = spring({frame: f - o1, fps, config: {damping: 14}});
+  const b = ease(f, o2, o2 + 20);
+  const c = ease(f, o2 + 30, o2 + 50);
   return (
     <AbsoluteFill>
       <Sky top="#1f5fb8" bottom="#ff9a4d" />

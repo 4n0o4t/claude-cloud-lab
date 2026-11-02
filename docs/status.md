@@ -27,6 +27,7 @@
 - 已验证事实：普通 PR 自动合并可用（PR #6 检查通过后自动合并）；`repo hygiene` 为必须通过的检查（PR #5 检查运行中处于 `blocked`）。
 - 已验证事实：`bash scripts/check.sh` 全部通过（2026-11-02 复核）；README 检查的失败路径经负向测试确认。
 - 已完成：`experiments/2026-11-02-remotion-sky-blue/`，Remotion 4.0.540 制作 50 秒科普短片，云端容器可直接渲染（复用预装 headless Chromium）。
+- 已完成：同一实验加 AI 配音（Kokoro-82M-v1.1-zh，CPU、无 API Key），旁白时长驱动时间轴，整片 87 秒；用 faster-whisper 转写回听自检。TTS 虚拟环境在 `temp/`，不进仓库，重建方法见实验 `tools/requirements-tts.txt`。
 - 已验证事实：2026-11-02 重新探测环境基线，容器镜像已升级（Python 3.13、uv 0.11、Node 22.23），详见 `docs/references.md`。
 - 已验证事实：`projects/titanic-1912/source` 不依赖提交外的 `dist/`，干净复制后 `npm ci && npm run build` 成功，新构建在无头 Chromium 中渲染无错误。
 - 已废弃路线：AWZ 的 room ledger、owner 表、handoff 模板、Reference Library 与 `.awz/references.json`——单一维护者且无持久本机，不需要。
@@ -53,5 +54,5 @@
 
 ## 下一步
 
-1. 等所有者看完科普短片的反馈：继续深入 Remotion（配音、转场、竖版等，见实验 README“后续”），或换别的方向。
+1. 等所有者看完配音版科普短片的反馈：换音色、加 BGM、词级字幕、竖版等（见实验 README“后续”），或换别的方向。
 2. 恢复时先重新探测环境基线有无变化，再看“待确认”里的候选规则是否有了结论。

@@ -1,0 +1,63 @@
+{
+  "model": "hexgrad/Kokoro-82M-v1.1-zh",
+  "voice": "zf_001",
+  "speed": 1.1,
+  "lines": {
+    "hook-010": {
+      "durationMs": 5000,
+      "hash": "9e9ea9631b7f446f"
+    },
+    "white-010": {
+      "durationMs": 5450,
+      "hash": "302d3609699192cd"
+    },
+    "white-020": {
+      "durationMs": 6075,
+      "hash": "ff8232fbaf09d45c"
+    },
+    "scatter-010": {
+      "durationMs": 5450,
+      "hash": "ee7dcf0df633cc85"
+    },
+    "scatter-020": {
+      "durationMs": 5025,
+      "hash": "1bf0c2606c457bf4"
+    },
+    "scatter-030": {
+      "durationMs": 7325,
+      "hash": "58dacdddc6fc3847"
+    },
+    "violet-010": {
+      "durationMs": 5750,
+      "hash": "9315ccf803d3aa6a"
+    },
+    "violet-020": {
+      "durationMs": 4125,
+      "hash": "9a6d460c045c805c"
+    },
+    "violet-030": {
+      "durationMs": 3225,
+      "hash": "4726b92a89629a1f"
+    },
+    "violet-040": {
+      "durationMs": 5425,
+      "hash": "edc68e4d160cd313"
+    },
+    "sunset-010": {
+      "durationMs": 5600,
+      "hash": "41944df08c78f6af"
+    },
+    "sunset-020": {
+      "durationMs": 8750,
+      "hash": "a9f463b0cca3f1d5"
+    },
+    "outro-010": {
+      "durationMs": 4000,
+      "hash": "637069c6ff00a355"
+    },
+    "outro-020": {
+      "durationMs": 5575,
+      "hash": "5ceb7a9b31cfdefd"
+    }
+  }
+}
