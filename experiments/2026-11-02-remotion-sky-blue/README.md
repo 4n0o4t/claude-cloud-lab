@@ -1,4 +1,4 @@
-# Remotion 科普短片：天空为什么是蓝色的（含 AI 配音）
+# Remotion 科普短片：天空为什么是蓝色的（含 AI 配音与 3D 精修版）
 
 - 日期：2026-11-02
 - 状态：完成
@@ -51,6 +51,16 @@ src/voice-manifest.json     每句 durationMs（提交，时间轴依赖它）
 - 每个引擎的音频和 manifest 分开存（`public/voice/zh-CN-gemini/`、`src/voice-manifest.gemini.json`），Remotion 注册两个 Composition：`SkyBlue`（Kokoro）与 `SkyBlueGemini`，同一套画面、各自的时间轴。
 - `VOICES.gemini.partial = true`：旁白没生成全时只渲染到第一个缺旁白的幕之前，方便配额不足时先做局部对比。
 
+### 3D 精修版 `SunsetHero`（第四轮，按官方 Agent Skills 做）
+
+- 先用 `npx skills add remotion-dev/skills --agent claude-code` 装官方 Remotion Agent Skills（13 个，装到本目录 `.claude/skills/`，不入库；`skills-lock.json` 记录来源与哈希）。安装后人工审读：全是 Markdown 与示例代码，没有自动执行的钩子。
+- 按 skill 的规则写：3D 包在 `@remotion/three` 的 `<ThreeCanvas>` 里、禁用 R3F 的 `useFrame`、所有动画由 `useCurrentFrame()` 驱动；`interpolate` 尽量内联在 `style`，用 `translate`/`scale` 属性和 `Easing.bezier`；镜头之间用 `@remotion/transitions` 的 `TransitionSeries`。
+- 约 24 秒，两个镜头：
+  1. **太空**（`src/hero/EarthShot.tsx`）：程序化地球着色器（fbm 噪声生成大陆、云层、夜面城市灯光、海面高光、晨昏线暖色），双层大气辉光（受光面偏蓝、晨昏线偏橙），确定性星空；镜头从远处推向晨昏线。
+  2. **地面**（`src/hero/SkyShot.tsx`）：three.js 官方 `Sky`（Preetham 解析天空模型，含瑞利与 Mie 散射项），天空颜色由公式随太阳高度角算出；四层远山做空气透视；太阳在“傍晚”那句旁白开始时下落，停在高度角 0.8°。
+- 叠加层（`src/hero/Overlays.tsx`）：标题、数据面板（太阳高度角 + 用 Kasten–Young 公式算的相对大气质量，地平线附近约 30–38 倍）、无底框字幕、飞鸟剪影、暗角与胶片颗粒。
+- 音频：复用 Kokoro 的两句日落旁白；`tools/bgm.py` 用 numpy 合成 Am–F–C–G 氛围铺底（无外部素材），说话时自动压低到 40%（ducking）。
+
 ## 复现
 
 ```bash
@@ -63,6 +73,11 @@ npm run studio          # 浏览器里预览、拖时间轴
 # 云端容器可复用预装的 headless Chromium，不设置则 Remotion 自动下载浏览器
 export REMOTION_BROWSER=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell
 npm run render          # 输出到仓库根目录 temp/sky-blue.mp4（被 git 忽略）
+# 3D 精修版：先生成 BGM，再渲染（软件 WebGL，较慢）
+python tools/bgm.py
+npx remotion render SunsetHero ../../temp/sunset-hero.mp4
+# 还原官方 Agent Skills（可选，供 Agent 参考）
+npx skills experimental_install
 ```
 
 成片与旁白 wav 都不提交进 git；需要时按上面命令重新生成。换音色：`python tools/tts.py --voice zm_010 --speed 1.1 --force`。

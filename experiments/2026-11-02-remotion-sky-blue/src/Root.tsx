@@ -1,4 +1,5 @@
 import '@fontsource/noto-sans-sc/400.css';
+import '@fontsource/noto-sans-sc/500.css';
 import '@fontsource/noto-sans-sc/700.css';
 import '@fontsource/noto-sans-sc/900.css';
 import React, {useEffect, useState} from 'react';
@@ -7,6 +8,7 @@ import {AbsoluteFill, Composition, Sequence, continueRender, delayRender, static
 import {SceneFade} from './lib';
 import {Hook, Outro, Scattering, Sunset, WhiteLight, WhyNotViolet} from './scenes';
 import {ALL_CAPTIONS, FPS, VOICES, VoiceName, buildTimeline} from './timeline';
+import {HERO_DURATION, SunsetHero} from './hero/SunsetHero';
 
 const COMPONENTS = {Hook, WhiteLight, Scattering, WhyNotViolet, Sunset, Outro};
 
@@ -18,7 +20,7 @@ const useFonts = () => {
       .then(() => {
         const text = document.body.innerText + '0123456789≈∝⁴nm';
         return Promise.all(
-          [400, 700, 900].map((w) => document.fonts.load(`${w} 40px "Noto Sans SC"`, text)),
+          [400, 500, 700, 900].map((w) => document.fonts.load(`${w} 40px "Noto Sans SC"`, text)),
         );
       })
       .then(() => continueRender(handle))
@@ -33,6 +35,31 @@ const ALL_TEXT =
   '大气层你正午：阳光穿过的大气很薄傍晚：阳光斜穿厚厚的大气正午，阳光穿过的大气路程短，散射出的蓝光铺满天空傍晚光路变长，蓝光沿途几乎被散射殆尽，剩下的红橙光染红了晚霞' +
   '波长越短，散射越强白天，我们看到被散射的蓝光；傍晚，看到穿透过来的红光由 Claude 用 Remotion 编写 · 画面全部由代码生成' +
   ALL_CAPTIONS;
+
+/** 字体闸门：请求 text 里所有字形，加载完才放行渲染。 */
+const FontGate: React.FC<{text: string}> = ({text}) => {
+  useFonts();
+  return (
+    <div style={{position: 'absolute', opacity: 0, fontFamily: '"Noto Sans SC"'}}>
+      {[400, 500, 700].map((w) => (
+        <span key={w} style={{fontWeight: w}}>
+          {text}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+const HERO_TEXT =
+  'RAYLEIGH SCATTERING日落，为什么是红色的？太阳高度角阳光穿过的大气×.°以正午头顶为 1 · Kasten–Young 公式晚霞，是蓝光被一路散射后剩下的颜色0123456789' +
+  ALL_CAPTIONS;
+
+const SunsetHeroWithFonts: React.FC = () => (
+  <>
+    <SunsetHero />
+    <FontGate text={HERO_TEXT} />
+  </>
+);
 
 export const SkyBlue: React.FC<{voice: VoiceName}> = ({voice}) => {
   useFonts();
@@ -84,5 +111,6 @@ export const Root: React.FC = () => (
         height={1080}
       />
     ))}
+    <Composition id="SunsetHero" component={SunsetHeroWithFonts} durationInFrames={HERO_DURATION} fps={FPS} width={1920} height={1080} />
   </>
 );
