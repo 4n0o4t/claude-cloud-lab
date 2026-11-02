@@ -6,7 +6,7 @@ import {Audio} from '@remotion/media';
 import {AbsoluteFill, Composition, Sequence, continueRender, delayRender, staticFile} from 'remotion';
 import {SceneFade} from './lib';
 import {Hook, Outro, Scattering, Sunset, WhiteLight, WhyNotViolet} from './scenes';
-import {ALL_CAPTIONS, FPS, SCENES, TOTAL} from './timeline';
+import {ALL_CAPTIONS, FPS, VOICES, VoiceName, buildTimeline} from './timeline';
 
 const COMPONENTS = {Hook, WhiteLight, Scattering, WhyNotViolet, Sunset, Outro};
 
@@ -34,8 +34,10 @@ const ALL_TEXT =
   '波长越短，散射越强白天，我们看到被散射的蓝光；傍晚，看到穿透过来的红光由 Claude 用 Remotion 编写 · 画面全部由代码生成' +
   ALL_CAPTIONS;
 
-export const SkyBlue: React.FC = () => {
+export const SkyBlue: React.FC<{voice: VoiceName}> = ({voice}) => {
   useFonts();
+  const {scenes} = buildTimeline(voice);
+  const dir = VOICES[voice].dir;
   return (
     <AbsoluteFill style={{background: '#000'}}>
       {/* 隐藏的全文本，确保所有字形分片都被字体加载器请求到 */}
@@ -44,7 +46,7 @@ export const SkyBlue: React.FC = () => {
         <span style={{fontWeight: 700}}>{ALL_TEXT}</span>
         <span style={{fontWeight: 900}}>{ALL_TEXT}</span>
       </div>
-      {SCENES.map(({name, from, duration, beats}) => {
+      {scenes.map(({name, from, duration, beats}) => {
         const C = COMPONENTS[name];
         return (
           <Sequence key={name} name={name} from={from} durationInFrames={duration}>
@@ -53,7 +55,7 @@ export const SkyBlue: React.FC = () => {
             </SceneFade>
             {Object.values(beats).map((b) => (
               <Sequence key={b.id} name={`voice ${b.id}`} from={b.from} durationInFrames={b.dur + 2}>
-                <Audio src={staticFile(`voice/zh-CN/${b.id}.wav`)} />
+                <Audio src={staticFile(`${dir}/${b.id}.wav`)} />
               </Sequence>
             ))}
           </Sequence>
@@ -63,6 +65,24 @@ export const SkyBlue: React.FC = () => {
   );
 };
 
+const VARIANTS: {id: string; voice: VoiceName}[] = [
+  {id: 'SkyBlue', voice: 'kokoro'},
+  {id: 'SkyBlueGemini', voice: 'gemini'},
+];
+
 export const Root: React.FC = () => (
-  <Composition id="SkyBlue" component={SkyBlue} durationInFrames={TOTAL} fps={FPS} width={1920} height={1080} />
+  <>
+    {VARIANTS.map(({id, voice}) => (
+      <Composition
+        key={id}
+        id={id}
+        component={SkyBlue}
+        defaultProps={{voice}}
+        durationInFrames={buildTimeline(voice).total}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
+    ))}
+  </>
 );

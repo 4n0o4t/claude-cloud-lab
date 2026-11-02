@@ -1,63 +1,64 @@
 {
+  "engine": "kokoro",
   "model": "hexgrad/Kokoro-82M-v1.1-zh",
   "voice": "zf_001",
   "speed": 1.1,
   "lines": {
     "hook-010": {
       "durationMs": 5000,
-      "hash": "9e9ea9631b7f446f"
+      "hash": "f3ea15ffaa2d61ad"
     },
     "white-010": {
       "durationMs": 5450,
-      "hash": "302d3609699192cd"
+      "hash": "66060790587d414e"
     },
     "white-020": {
       "durationMs": 6075,
-      "hash": "ff8232fbaf09d45c"
+      "hash": "1b40d4cbc67909cc"
     },
     "scatter-010": {
       "durationMs": 5450,
-      "hash": "ee7dcf0df633cc85"
+      "hash": "a8ac5d4e4b4c0532"
     },
     "scatter-020": {
       "durationMs": 5025,
-      "hash": "1bf0c2606c457bf4"
+      "hash": "8a4fa2536b49293b"
     },
     "scatter-030": {
       "durationMs": 7325,
-      "hash": "58dacdddc6fc3847"
+      "hash": "dc1f4bfe69f24740"
     },
     "violet-010": {
       "durationMs": 5750,
-      "hash": "9315ccf803d3aa6a"
+      "hash": "f8d032fd7117ca6c"
     },
     "violet-020": {
       "durationMs": 4125,
-      "hash": "9a6d460c045c805c"
+      "hash": "754ae6b52a95d3af"
     },
     "violet-030": {
       "durationMs": 3225,
-      "hash": "4726b92a89629a1f"
+      "hash": "d2e032fa7abb5bef"
     },
     "violet-040": {
       "durationMs": 5425,
-      "hash": "edc68e4d160cd313"
+      "hash": "0f24060b6c10c880"
     },
     "sunset-010": {
       "durationMs": 5600,
-      "hash": "41944df08c78f6af"
+      "hash": "31d1af991a55d0cd"
     },
     "sunset-020": {
       "durationMs": 8750,
-      "hash": "a9f463b0cca3f1d5"
+      "hash": "9dbae86419b57b4a"
     },
     "outro-010": {
       "durationMs": 4000,
-      "hash": "637069c6ff00a355"
+      "hash": "4a61f09ef3414049"
     },
     "outro-020": {
       "durationMs": 5575,
-      "hash": "5ceb7a9b31cfdefd"
+      "hash": "8f8f68bf9d36a387"
     }
   }
 }
