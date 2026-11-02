@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "tts": "python tools/tts.py --speed 1.1",
     "studio": "remotion studio",
     "render": "remotion render SkyBlue ../../temp/sky-blue.mp4",
     "still": "remotion still SkyBlue",
@@ -11,6 +12,7 @@
   "dependencies": {
     "@fontsource/noto-sans-sc": "5.3.1",
     "@remotion/cli": "4.0.540",
+    "@remotion/media": "4.0.540",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "remotion": "4.0.540"

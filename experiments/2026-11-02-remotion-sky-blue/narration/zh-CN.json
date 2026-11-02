@@ -1,0 +1,21 @@
+[
+  {"id": "hook-010", "scene": "Hook", "at": 20, "speak": "天空为什么是蓝色的？今天带你看懂瑞利散射。", "caption": null},
+
+  {"id": "white-010", "scene": "WhiteLight", "at": 15, "speak": "阳光看起来是白色的，其实是各种颜色的光混在一起。", "caption": "阳光其实是各种颜色的光混在一起"},
+  {"id": "white-020", "scene": "WhiteLight", "speak": "不同颜色的光，波长不同：红光波长最长，蓝光和紫光波长短。", "caption": "不同颜色波长不同：红光波长长，蓝光、紫光波长短"},
+
+  {"id": "scatter-010", "scene": "Scattering", "at": 15, "speak": "空气分子比光的波长小得多，会把光散射到四面八方。", "caption": "空气分子比光的波长小得多，会把光散射到四面八方"},
+  {"id": "scatter-020", "scene": "Scattering", "speak": "其中，蓝光被大量散射，而红光大多直接穿过。", "caption": "蓝光被大量散射，红光大多直接穿过"},
+  {"id": "scatter-030", "scene": "Scattering", "speak": "这就是瑞利散射：波长越短，散射越强。蓝光被散射的程度，大约是红光的六倍。", "caption": "这叫瑞利散射：波长越短，散射越强，蓝光被散射得约是红光的 6 倍"},
+
+  {"id": "violet-010", "scene": "WhyNotViolet", "at": 10, "speak": "可是，紫光波长更短，散射得更厉害，天空为什么不是紫色的呢？", "caption": "紫光波长更短、散射更强，天空为什么不是紫色？"},
+  {"id": "violet-020", "scene": "WhyNotViolet", "speak": "第一，阳光里的紫光，本来就比蓝光少。", "caption": null},
+  {"id": "violet-030", "scene": "WhyNotViolet", "speak": "第二，人眼对紫光不太敏感。", "caption": null},
+  {"id": "violet-040", "scene": "WhyNotViolet", "speak": "第三，各种颜色的散射光混在一起，看起来就是天蓝色。", "caption": null},
+
+  {"id": "sunset-010", "scene": "Sunset", "at": 10, "speak": "正午，阳光穿过的大气路程短，散射出的蓝光铺满了天空。", "caption": "正午，阳光穿过的大气路程短，散射出的蓝光铺满天空"},
+  {"id": "sunset-020", "scene": "Sunset", "speak": "到了傍晚，阳光要斜着穿过厚厚的大气，蓝光沿途几乎被散射殆尽，剩下的红橙光，就染红了晚霞。", "caption": "傍晚光路变长，蓝光沿途几乎被散射殆尽，剩下的红橙光染红了晚霞"},
+
+  {"id": "outro-010", "scene": "Outro", "at": 5, "speak": "一句话总结：波长越短，散射越强。", "caption": null},
+  {"id": "outro-020", "scene": "Outro", "speak": "白天，我们看到被散射的蓝光；傍晚，看到穿透过来的红光。", "caption": null}
+]

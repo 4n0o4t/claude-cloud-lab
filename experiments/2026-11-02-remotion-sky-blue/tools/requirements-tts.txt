@@ -1,0 +1,8 @@
+# 旁白 TTS 环境（Python 3.12，CPU 即可），与 Remotion 的 Node 依赖分开
+# uv venv --python 3.12 ../../temp/tts-venv
+# uv pip install --index-strategy unsafe-best-match --extra-index-url https://download.pytorch.org/whl/cpu -r tools/requirements-tts.txt
+kokoro==0.9.4
+misaki[zh]==0.9.4
+torch==2.15.0
+soundfile==0.14.0
+numpy==2.5.4
