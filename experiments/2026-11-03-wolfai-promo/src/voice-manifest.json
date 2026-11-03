@@ -1,0 +1,44 @@
+{
+  "engine": "kokoro",
+  "model": "hexgrad/Kokoro-82M-v1.1-zh",
+  "voice": "zm_010",
+  "speed": 1.05,
+  "lines": {
+    "hook-010": {
+      "durationMs": 3350,
+      "hash": "9699c82910cb1769"
+    },
+    "home-010": {
+      "durationMs": 4175,
+      "hash": "7bfac3f40c9f414c"
+    },
+    "roles-010": {
+      "durationMs": 5100,
+      "hash": "d22cd95d54fdcf3b"
+    },
+    "setup-010": {
+      "durationMs": 3500,
+      "hash": "8277838d712254b9"
+    },
+    "night-010": {
+      "durationMs": 4950,
+      "hash": "706978627d432148"
+    },
+    "day-010": {
+      "durationMs": 5200,
+      "hash": "c40cc63067b75fee"
+    },
+    "vote-010": {
+      "durationMs": 3750,
+      "hash": "66edc5e53a23d534"
+    },
+    "end-010": {
+      "durationMs": 4325,
+      "hash": "2d9c1a450ec5251d"
+    },
+    "outro-010": {
+      "durationMs": 2300,
+      "hash": "d5a4b476c4a01b26"
+    }
+  }
+}

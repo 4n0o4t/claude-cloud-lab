@@ -1,0 +1,155 @@
+{
+ "note": "成片所用那次录像的日志时间点（秒，相对录像开头；画面比日志晚约 0.5~1 秒出现）。重新录制后按新的 marks.json 调整 src/Promo.tsx 里 SHOTS 的秒数。",
+ "marks": [
+  {
+   "t": 4.3,
+   "type": "system",
+   "seat": null,
+   "content": "游戏已创建，等待开始..."
+  },
+  {
+   "t": 4.3,
+   "type": "system",
+   "seat": null,
+   "content": "游戏开始！"
+  },
+  {
+   "t": 4.3,
+   "type": "system",
+   "seat": null,
+   "content": "本局公开板子：女巫x1，守卫x1，村民x1，狼人x2，预言家x1"
+  },
+  {
+   "t": 4.3,
+   "type": "phase",
+   "seat": null,
+   "content": "第1夜：天黑请闭眼"
+  },
+  {
+   "t": 30.1,
+   "type": "phase",
+   "seat": null,
+   "content": "第1天：天亮了，昨晚是平安夜"
+  },
+  {
+   "t": 30.1,
+   "type": "phase",
+   "seat": null,
+   "content": "开始白天发言环节"
+  },
+  {
+   "t": 33.8,
+   "type": "speech",
+   "seat": 1,
+   "content": "我是好人，首夜信息太少，先听后置位，有跳预言家的我会认真听。"
+  },
+  {
+   "t": 37.8,
+   "type": "speech",
+   "seat": 2,
+   "content": "平安夜我心里有数，先不多说，等后面的人跳身份再表态。"
+  },
+  {
+   "t": 42.0,
+   "type": "speech",
+   "seat": 3,
+   "content": "我才是真预言家，昨晚验的5号，查杀！5号待会儿要是起跳，那就是悍跳狼，大家看清楚。"
+  },
+  {
+   "t": 46.1,
+   "type": "speech",
+   "seat": 4,
+   "content": "3号起跳报了查杀，我先信一半，就看对面会不会反跳。"
+  },
+  {
+   "t": 50.1,
+   "type": "speech",
+   "seat": 5,
+   "content": "我才是预言家！3号就是我昨晚验了的查杀，被验到就反手悍跳。今天必须出3号。"
+  },
+  {
+   "t": 54.2,
+   "type": "speech",
+   "seat": 6,
+   "content": "两个预言家对跳，说实话我觉得3号语气更真。5号话说得太满，有点急，我先站3号。"
+  },
+  {
+   "t": 57.1,
+   "type": "phase",
+   "seat": null,
+   "content": "开始投票环节"
+  },
+  {
+   "t": 58.7,
+   "type": "vote",
+   "seat": 1,
+   "content": "1号投给了3号"
+  },
+  {
+   "t": 60.4,
+   "type": "vote",
+   "seat": 2,
+   "content": "2号投给了3号"
+  },
+  {
+   "t": 62.0,
+   "type": "vote",
+   "seat": 3,
+   "content": "3号投给了5号"
+  },
+  {
+   "t": 63.6,
+   "type": "vote",
+   "seat": 4,
+   "content": "4号投给了3号"
+  },
+  {
+   "t": 65.3,
+   "type": "vote",
+   "seat": 5,
+   "content": "5号投给了3号"
+  },
+  {
+   "t": 66.9,
+   "type": "vote",
+   "seat": 6,
+   "content": "6号投给了5号"
+  },
+  {
+   "t": 67.3,
+   "type": "eliminate",
+   "seat": null,
+   "content": "3号被投票出局（4票）"
+  },
+  {
+   "t": 70.6,
+   "type": "last_words",
+   "seat": 3,
+   "content": "出我可以，但5号绝对是狼。明天你们就知道票投错了。"
+  },
+  {
+   "t": 70.6,
+   "type": "phase",
+   "seat": null,
+   "content": "第2夜：天黑请闭眼"
+  },
+  {
+   "t": 93.1,
+   "type": "death",
+   "seat": null,
+   "content": "第2天：天亮了，昨晚5、6号死亡"
+  },
+  {
+   "t": 93.1,
+   "type": "end",
+   "seat": null,
+   "content": "游戏结束！好人阵营获胜！"
+  },
+  {
+   "t": 93.1,
+   "type": "reveal",
+   "seat": null,
+   "content": "身份揭晓：1号：守卫，2号：女巫，3号：狼人，4号：村民，5号：预言家，6号：狼人"
+  }
+ ]
+}
