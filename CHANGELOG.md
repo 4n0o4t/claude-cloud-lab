@@ -14,6 +14,7 @@
 - 实验 `experiments/2026-09-24-multi-agent-workflows/`：多 Agent 工作流调研（含 macOS 27 复刻案例），提出候选规则 R1–R10，尚未采纳。
 - 实验 `experiments/2026-11-02-remotion-sky-blue/`：用 Remotion 制作科普短片《天空为什么是蓝色的》，并用开源 Kokoro TTS 加中文配音，旁白时长驱动时间轴；对比 Gemini 3.8 Flash TTS；按官方 Remotion Agent Skills 做了日落 3D 精修版。
 - 实验 `experiments/2026-11-03-wolfai-promo/`：给所有者的 wolfai-killer（月夜狼人杀）做 41.6 秒横屏宣传片；本地假 LLM 接口驱动剧本局，Playwright 录真实界面，Remotion 合成镜头、字幕、旁白与配乐。
+- 同一实验第二版 `WolfTrailer`：拆界面组件 + 3D 景深 + 动态大字 + 节拍卡点重做宣传片（43.2 秒），新增高清截图采集、素材整理和节拍配乐脚本。
 
 ### Changed
 
