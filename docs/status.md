@@ -3,8 +3,8 @@
 ## 当前阶段
 
 - 阶段：discover
-- 状态：无进行中的任务。所有者在探索“AI 做视频”方向，本仓库先用一支 Remotion 科普短片试水
-- 最近收口：2026-11-02，完成 Remotion 科普短片实验（`experiments/2026-11-02-remotion-sky-blue/`）；同日早些时候做了仓库整理（环境基线复核、CHANGELOG 补齐）
+- 状态：无进行中的任务。所有者在探索“AI 做视频”方向：先做了 Remotion 科普短片，又给所有者自己的项目做了产品宣传片
+- 最近收口：2026-11-03，完成月夜狼人杀宣传片实验（`experiments/2026-11-03-wolfai-promo/`）；2026-11-02 完成 Remotion 科普短片实验（`experiments/2026-11-02-remotion-sky-blue/`）
 - Branch：`main`（默认分支，2026-09-24 由仓库所有者从初始化提交 `6cdc906` 创建）
 - 环境基线：已探测，见 `docs/references.md`
 
@@ -28,6 +28,8 @@
 - 已验证事实：`bash scripts/check.sh` 全部通过（2026-11-02 复核）；README 检查的失败路径经负向测试确认。
 - 已完成：`experiments/2026-11-02-remotion-sky-blue/`，Remotion 4.0.540 制作 50 秒科普短片，云端容器可直接渲染（复用预装 headless Chromium）。
 - 已完成：同一实验加 AI 配音（Kokoro-82M-v1.1-zh，CPU、无 API Key），旁白时长驱动时间轴，整片 87 秒；用 faster-whisper 转写回听自检。TTS 虚拟环境在 `temp/`，不进仓库，重建方法见实验 `tools/requirements-tts.txt`。
+- 已完成：`experiments/2026-11-03-wolfai-promo/`，给所有者的 wolfai-killer（`redesign` 分支 `88c41e7`）做 41.6 秒横屏宣传片：本地假 LLM 接口驱动剧本局，Playwright 录真实界面，Remotion 合成；录屏脚本独立复跑通过。
+- 已验证事实：所有者 GitHub 主页是 `Dr-Ai-0018`。wolfai-killer 的新版在 `redesign` 分支，`main` 是 5 月的旧界面；本会话对它只有只读权限。
 - 已验证事实：2026-11-02 重新探测环境基线，容器镜像已升级（Python 3.13、uv 0.11、Node 22.23），详见 `docs/references.md`。
 - 已验证事实：`projects/titanic-1912/source` 不依赖提交外的 `dist/`，干净复制后 `npm ci && npm run build` 成功，新构建在无头 Chromium 中渲染无错误。
 - 已废弃路线：AWZ 的 room ledger、owner 表、handoff 模板、Reference Library 与 `.awz/references.json`——单一维护者且无持久本机，不需要。
@@ -54,6 +56,7 @@
 
 ## 下一步
 
+0. 等所有者看月夜狼人杀宣传片反馈。可选：更锐的录屏（deviceScaleFactor 2）、接真模型录真实对局、竖版。另外要把发现的问题告诉所有者（实验 README“结果”最后一条）：旁观页即使开了上帝模式也没有“上帝”按钮。
 0. 已完成：3D 精修版 `SunsetHero`（官方 Remotion Agent Skills + @remotion/three），24.6 秒，软件 WebGL（swangle）渲染 11 分钟；等所有者看片反馈。
 1. 等所有者对 Gemini 3.8 Flash TTS 与 Kokoro 的 A/B 试听反馈（前 4 幕；Gemini 免费档每天 10 次请求，剩余 3 句待配额恢复或换付费档）。之后可选：换音色、加 BGM、词级字幕、竖版等（见实验 README“后续”）。
    - Gemini 密钥：所有者给的是临时密钥，已承诺吊销；新会话需要时请所有者把 `GEMINI_API_KEY` 配到环境设置里，不在聊天里传。
