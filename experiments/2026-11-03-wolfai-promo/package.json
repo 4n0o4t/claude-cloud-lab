@@ -4,9 +4,11 @@
   "type": "module",
   "scripts": {
     "tts": "python tools/tts.py --voice zm_010 --speed 1.05",
+    "score": "python tools/score.py",
     "studio": "remotion studio",
-    "render": "remotion render WolfPromo ../../temp/wolfai-promo.mp4",
-    "still": "remotion still WolfPromo",
+    "render": "remotion render WolfTrailer ../../temp/wolfai-trailer.mp4",
+    "render:v1": "remotion render WolfPromo ../../temp/wolfai-promo.mp4",
+    "still": "remotion still WolfTrailer",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
