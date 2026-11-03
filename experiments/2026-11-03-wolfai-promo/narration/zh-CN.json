@@ -1,0 +1,11 @@
+[
+  {"id": "hook-010", "scene": "hook", "speak": "想玩狼人杀，却凑不齐人？", "caption": "想玩狼人杀，却凑不齐人？"},
+  {"id": "home-010", "scene": "home", "speak": "月夜狼人杀，让一桌 AI 陪你开局。", "caption": "月夜狼人杀，让一桌 AI 陪你开局"},
+  {"id": "roles-010", "scene": "roles", "speak": "二十种身份，十二种性情，每个 AI 都有自己的脾气。", "caption": "二十种身份 · 十二种性情"},
+  {"id": "setup-010", "scene": "setup", "speak": "选好板子，一键立案开局。", "caption": "选好板子，一键开局"},
+  {"id": "night-010", "scene": "night", "speak": "天黑请闭眼。守卫、狼人、预言家、女巫，依次行动。", "caption": "天黑请闭眼 · 神职与狼人依次行动"},
+  {"id": "day-010", "scene": "day", "speak": "天亮之后，AI 会报查杀、会悍跳，也会互相拆台。", "caption": "报查杀、悍跳、互相拆台"},
+  {"id": "vote-010", "scene": "vote", "speak": "放逐投票，谁投了谁，一目了然。", "caption": "放逐投票，票型一目了然"},
+  {"id": "end-010", "scene": "end", "speak": "胜负揭晓，整局存进卷宗，随时复盘。", "caption": "胜负揭晓，整局存档复盘"},
+  {"id": "outro-010", "scene": "outro", "speak": "今晚，谁人为狼？", "caption": null}
+]

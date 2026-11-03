@@ -1,0 +1,6 @@
+node_modules/
+out/
+# 以下都可由 tools/ 里的脚本重新生成
+public/voice/
+public/bgm/
+public/rec/
