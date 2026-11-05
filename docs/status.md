@@ -30,7 +30,7 @@
 - 已完成：同一实验加 AI 配音（Kokoro-82M-v1.1-zh，CPU、无 API Key），旁白时长驱动时间轴，整片 87 秒；用 faster-whisper 转写回听自检。TTS 虚拟环境在 `temp/`，不进仓库，重建方法见实验 `tools/requirements-tts.txt`。
 - 已完成：`experiments/2026-11-03-wolfai-promo/`，给所有者的 wolfai-killer（`redesign` 分支 `88c41e7`）做 41.6 秒横屏宣传片：本地假 LLM 接口驱动剧本局，Playwright 录真实界面，Remotion 合成；录屏脚本独立复跑通过。
 - 已完成：同一实验第二版 `WolfTrailer`（43.2 秒）：按社区产品片做法重做，用 DPR2 高清截图、项目自带 20 张身份美术、3D 屏幕与浮层、动态大字、100 BPM 节拍表驱动的配乐与卡点；不再用旁白。第一版 `WolfPromo` 保留对照。
-- 已完成：`experiments/2026-11-05-wolfai-arena3d/`，所有者提议把宣传片里的 3D 圆桌升级进产品；本地原型通过 6/12/16 人、三种宽度、真人视角与 2D 切换截图验证，补丁 `patch/0001-arena-3d.patch` 可对 `origin/redesign` 干净应用。
+- 已完成：`experiments/2026-11-05-wolfai-arena3d/`，所有者提议把宣传片里的 3D 圆桌升级进产品；本地原型通过 6/12/16 人、三种宽度、真人视角与 2D 切换截图验证，补丁 `patch/0001-arena-3d.patch` 可对 `origin/redesign` 干净应用。所有者嫌第一版原型“不如宣传片精致”，已按片子质感重做视觉层（发丝金线台面、阶段氛围光、按人数缩放的圆章、状态辉光、发光弧线、落座与描线动效），补丁已更新。
 - 已验证事实：所有者对视频的偏好：整页录屏推镜被评为“很机械、没有设计感”，要有设计感的产品片。
 - 已验证事实：所有者 GitHub 主页是 `Dr-Ai-0018`。wolfai-killer 的新版在 `redesign` 分支，`main` 是 5 月的旧界面；本会话对它只有只读权限。
 - 已验证事实：2026-11-02 重新探测环境基线，容器镜像已升级（Python 3.13、uv 0.11、Node 22.23），详见 `docs/references.md`。
