@@ -1,4 +1,4 @@
-From 9d3b9371f712e65d786f3456a6cc2eb0cf0197cc Mon Sep 17 00:00:00 2001
+From d9ba569b48d6231dc8b3f706f77cf918ed63a4fd Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 5 Nov 2026 02:21:26 +0000
 Subject: [PATCH] =?UTF-8?q?feat:=20=E5=AF=B9=E5=B1=80=E5=9C=86=E6=A1=8C?=
@@ -9,24 +9,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-1. **立体圆桌**：桌面改为俯视角椭圆台面，座位按纵深缩放、排层级、带落影，近大远小；不引入 WebGL，座位仍是原来的按钮，点选、键盘和各种状态样式照旧
-2. **自己的座位转到正前方**：玩家视角下本人座位离镜头最近；旁观时 1 号在远端正中，与平面版一致
-3. **投票弧线**：立体视图里投票线改为朝桌外鼓出的弧线并压在桌心文字之下，不再横穿“当前票数”
-4. **切换与回退**：阶段栏新增“平面 / 立体”按钮，选择记在 localStorage（wk.arena.mode）；屏宽 ≤640px 自动用平面版
-5. **兼容**：原 getPlayerPositionStyle / getVoteLineCoords 不变，新增 3D 版本函数
+1. **立体圆桌**：桌面改为俯视角椭圆，只留两圈发丝金线，靠阶段氛围光（白昼暖、夜里冷蓝、投票泛红）撑起立体感；不引入 WebGL，座位仍是原来的按钮，点选、键盘和各种状态样式照旧
+2. **圆章**：座位改为大号圆章，按纵深缩放、分层、带落影，直径随桌宽和人数变化（cqw），16 人也不挤；13 人以上隐藏重复的“座 xx”标签
+3. **状态辉光**：发言、等待、选中、票数领先的座位描边发光，脚下台面亮起光斑
+4. **自己的座位转到正前方**：玩家视角下本人座位离镜头最近；旁观时 1 号在远端正中，与平面版一致
+5. **投票弧线**：发光实线弧从投票者描向目标，目标端带圆点，票数领先者的弧线染红；压在桌心文字之下，不再横穿“当前票数”
+6. **动效**：座位依次落座、弧线描出；prefers-reduced-motion 时关闭
+7. **切换与回退**：阶段栏新增“平面 / 立体”按钮，选择记在 localStorage（wk.arena.mode）；屏宽 ≤640px 自动用平面版
+8. **兼容**：原 getPlayerPositionStyle / getVoteLineCoords 不变，新增 3D 版本函数
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01JagXYNx6kv4hx4difPgkbz
 ---
- frontend/src/gamePlayUi.js      |  62 +++++++++++++
- frontend/src/views/GamePlay.vue | 156 ++++++++++++++++++++++++++++----
- 2 files changed, 201 insertions(+), 17 deletions(-)
+ frontend/src/gamePlayUi.js      |  68 ++++++++
+ frontend/src/views/GamePlay.vue | 269 +++++++++++++++++++++++++++++---
+ 2 files changed, 319 insertions(+), 18 deletions(-)
 
 diff --git a/frontend/src/gamePlayUi.js b/frontend/src/gamePlayUi.js
-index a345b2c..51335fc 100644
+index a345b2c..dff6f0e 100644
 --- a/frontend/src/gamePlayUi.js
 +++ b/frontend/src/gamePlayUi.js
-@@ -46,6 +46,68 @@ export function getVoteLineCoords(voter, target, total, radius = 34) {
+@@ -46,6 +46,74 @@ export function getVoteLineCoords(voter, target, total, radius = 34) {
    }
  }
  
@@ -41,6 +44,11 @@ index a345b2c..51335fc 100644
 +  const tilt = total > 12 ? 0.5 : total > 8 ? 0.46 : 0.42
 +  const rx = 42
 +  return { rx, ry: rx * tilt * ARENA_3D_ASPECT, tilt }
++}
++
++/* 圆章直径(占桌宽的百分比,CSS 里按 cqw 用):人越多越小,保证 16 人也不挤 */
++export function arena3dDiscPct(total) {
++  return total > 12 ? 5.2 : total > 8 ? 6.2 : 7.6
 +}
 +
 +function seatAngle3d(index, total, frontSeat) {
@@ -62,52 +70,53 @@ index a345b2c..51335fc 100644
 +    left: `${x}%`,
 +    top: `${y}%`,
 +    zIndex: 4 + Math.round(depth * 20),
-+    '--seat-scale': (0.8 + 0.3 * depth).toFixed(3),
-+    '--seat-dim': (0.78 + 0.22 * depth).toFixed(3),
++    '--seat-scale': (0.8 + 0.34 * depth).toFixed(3),
++    '--seat-dim': (0.74 + 0.26 * depth).toFixed(3),
++    '--seat-i': index, // 进场动画按座位错开
 +  }
 +}
 +
-+/* 3D 投票弧线:viewBox 0 0 100 (100/ASPECT),起止点缩进到盘内,向外鼓出避开桌心文字 */
++/* 3D 投票弧线:viewBox 0 0 100 (100/ASPECT),从投票者圆盘边缘出发,像从桌面上方“抛”过去一样向上拱起。
++ * 弧线在 DOM 里压在桌心文字之下(z-index),穿过桌心也不挡字。 */
 +export function getVoteArc3d(voter, target, total, frontSeat = null) {
 +  const h = 100 / ARENA_3D_ASPECT
-+  const shrink = 0.86
 +  const p = (seat) => {
 +    const { x, y } = getSeatPose3d(seat - 1, total, frontSeat)
-+    return { x: 50 + (x - 50) * shrink, y: (50 + (y - 50) * shrink) * (h / 100) }
++    return { x, y: y * (h / 100) }
 +  }
 +  const a = p(Number(voter))
 +  const b = p(Number(target))
-+  const c = { x: 50, y: h / 2 }
-+  const mx = (a.x + b.x) / 2
-+  const my = (a.y + b.y) / 2
 +  const dist = Math.hypot(b.x - a.x, b.y - a.y) || 1
-+  // 弧线朝远离桌心的一侧鼓出,绕开桌心的发言/票数;正对面两座(连线过桌心)固定往右绕
-+  let nx = -(b.y - a.y) / dist
-+  let ny = (b.x - a.x) / dist
-+  const side = (mx - c.x) * nx + (my - c.y) * ny
-+  if (side < 0 || (Math.abs(side) < 1e-6 && nx < 0)) { nx = -nx; ny = -ny }
-+  const bulge = Math.min(dist * 0.42, 16) // 封顶:正对面的长弦不至于绕出桌外
-+  const qx = mx + nx * bulge
-+  const qy = my + ny * bulge - 2 // 再往上抬一点,像从桌面上方划过
-+  return `M${a.x.toFixed(2)},${a.y.toFixed(2)} Q${qx.toFixed(2)},${qy.toFixed(2)} ${b.x.toFixed(2)},${b.y.toFixed(2)}`
++  // 起止点各缩进一个圆章半径,线从圆章边缘出,不压在号码上
++  const inset = Math.min(arena3dDiscPct(total) / 2, dist / 3)
++  const ux = (b.x - a.x) / dist
++  const uy = (b.y - a.y) / dist
++  const s = { x: a.x + ux * inset, y: a.y + uy * inset }
++  const e = { x: b.x - ux * inset, y: b.y - uy * inset }
++  const lift = 3 + dist * 0.16
++  let qx = (s.x + e.x) / 2
++  const qy = Math.min(s.y, e.y) - lift
++  // 纵向对座:往桌心方向偏一点,免得弧线叠成竖线或甩出桌外
++  if (Math.abs(b.x - a.x) < 4) qx += qx <= 50 ? 9 : -9
++  return `M${s.x.toFixed(2)},${s.y.toFixed(2)} Q${qx.toFixed(2)},${qy.toFixed(2)} ${e.x.toFixed(2)},${e.y.toFixed(2)}`
 +}
 +
  /* 发言气泡快照(gameSession 依赖) */
  export function buildSpeechBubble(seat, content) {
    return { show: true, seat, content }
 diff --git a/frontend/src/views/GamePlay.vue b/frontend/src/views/GamePlay.vue
-index ff3f1ac..cd61cf9 100644
+index ff3f1ac..7658ea4 100644
 --- a/frontend/src/views/GamePlay.vue
 +++ b/frontend/src/views/GamePlay.vue
 @@ -5,6 +5,7 @@ import { gameApi, GameWebSocket } from '@/api'
  import { buildDaySummary } from '@/gamePlay'
  import {
    getPhaseText, formatCountdown, getPlayerPositionStyle, getVoteLineCoords,
-+  getPlayerPositionStyle3d, getVoteArc3d, arena3dGeometry, ARENA_3D_ASPECT,
++  getPlayerPositionStyle3d, getVoteArc3d, arena3dGeometry, arena3dDiscPct, ARENA_3D_ASPECT,
    canSelectTarget, rolePortrait, roleGlyph, campKind,
  } from '@/gamePlayUi'
  import { applyLoverInfo, applyRoleResult, fetchInitialPlayerContext } from '@/gameRealtime'
-@@ -203,15 +204,35 @@ const takeoverCandidatePlayers = computed(() => (
+@@ -203,15 +204,42 @@ const takeoverCandidatePlayers = computed(() => (
  
  const pad2 = n => String(n).padStart(2, '0')
  
@@ -135,7 +144,7 @@ index ff3f1ac..cd61cf9 100644
 +const seatTotal = () => totalPlayers.value || players.value.length || 12
 +const arenaVars = computed(() => {
 +  const { rx, ry } = arena3dGeometry(seatTotal())
-+  return { '--tt-rx': `${rx}%`, '--tt-ry': `${ry}%` }
++  return { '--tt-rx': `${rx}%`, '--tt-ry': `${ry}%`, '--disc-pct': arena3dDiscPct(seatTotal()) }
 +})
  
 -const voteLine = (voter, target) => {
@@ -148,10 +157,26 @@ index ff3f1ac..cd61cf9 100644
 +
 +const voteLine = (voter, target) => getVoteLineCoords(Number(voter), Number(target), seatTotal())
 +const voteArc = (voter, target) => getVoteArc3d(voter, target, seatTotal(), mySeat.value)
++/* 当前票数领先的座位(可能并列),3D 下描红光、弧线染红 */
++const voteLeadSeats = computed(() => {
++  const counts = Object.entries(voteCounts.value || {}).filter(([, c]) => c > 0)
++  if (!counts.length) return []
++  const top = Math.max(...counts.map(([, c]) => c))
++  return counts.filter(([, c]) => c === top).map(([seat]) => Number(seat))
++})
  
  function godInfoOf(seat) {
    return godModePlayers.value.find(g => g.seat === seat) || null
-@@ -852,6 +873,10 @@ onUnmounted(() => {
+@@ -243,6 +271,8 @@ function seatClasses(p) {
+     'is-paired': selectedPair.value.includes(p.seat),
+     'is-waiting': gameState.value.waiting_for_human === p.seat,
+     'is-speaking': latestSpeaker.value === p.seat,
++    'has-votes': gameState.value.phase === 'vote' && Boolean(voteCounts.value[p.seat]),
++    'is-vote-lead': gameState.value.phase === 'vote' && voteLeadSeats.value.includes(p.seat),
+     [`camp-${camp}`]: Boolean(camp),
+   }
+ }
+@@ -852,6 +882,10 @@ onUnmounted(() => {
              接 管 中 · 座 {{ pad2(mySeat) }}
              <button type="button" class="pb-release" :disabled="takeoverBusy" @click="releaseSeat">松 手</button>
            </span>
@@ -162,15 +187,19 @@ index ff3f1ac..cd61cf9 100644
            <button v-if="godModeEnabled" type="button" class="pb-btn" :class="{ 'is-god': godModeActive }" @click="toggleGodMode">
              {{ godModeActive ? '闭 眼' : '上 帝' }}
            </button>
-@@ -873,24 +898,39 @@ onUnmounted(() => {
+@@ -872,25 +906,50 @@ onUnmounted(() => {
+       </div>
  
        <!-- 圆桌 -->
-       <div class="arena-wrap">
+-      <div class="arena-wrap">
 -        <div class="arena">
-+        <div class="arena" :class="{ 'is-3d': is3d, 'is-night': isNight }" :style="is3d ? arenaVars : null">
++      <div class="arena-wrap" :class="{ 'is-3d': is3d, 'is-night': isNight, 'is-vote': gameState.phase === 'vote' }">
++        <div v-if="is3d" class="arena-glow" aria-hidden="true"></div>
++        <div class="arena" :class="{ 'is-3d': is3d, 'is-night': isNight, 'is-crowded': seatTotal() > 12 }" :style="is3d ? arenaVars : null">
 +          <!-- 3D:桌面(椭圆台面 + 两圈刻线) -->
 +          <div v-if="is3d" class="table-top" aria-hidden="true">
 +            <span class="tt-ring"></span>
++            <span class="tt-ring is-inner"></span>
 +          </div>
            <!-- 投票连线 -->
            <svg
@@ -182,6 +211,12 @@ index ff3f1ac..cd61cf9 100644
                <marker id="voteArrow" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
                  <polygon points="0 0, 6 2, 0 4" fill="var(--color-moonlight-dim)" fill-opacity="0.5" />
                </marker>
++              <marker id="voteDot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4">
++                <circle cx="5" cy="5" r="4" fill="var(--color-text)" />
++              </marker>
++              <marker id="voteDotLead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4">
++                <circle cx="5" cy="5" r="4" fill="var(--color-blood-hover)" />
++              </marker>
              </defs>
 -            <line
 -              v-for="(target, voter) in currentVotes"
@@ -196,7 +231,9 @@ index ff3f1ac..cd61cf9 100644
 +                :key="`vote3d-${voter}-${target}`"
 +                :d="voteArc(voter, target)"
 +                class="vote-arc"
-+                marker-end="url(#voteArrow)"
++                :class="{ 'is-lead': voteLeadSeats.includes(Number(target)) }"
++                :marker-end="voteLeadSeats.includes(Number(target)) ? 'url(#voteDotLead)' : 'url(#voteDot)'"
++                pathLength="1""
 +              />
 +            </template>
 +            <template v-else>
@@ -211,14 +248,42 @@ index ff3f1ac..cd61cf9 100644
            </svg>
  
            <!-- 座位 -->
-@@ -2104,6 +2144,88 @@ onUnmounted(() => {
+@@ -2104,6 +2163,180 @@ onUnmounted(() => {
  }
  .ct-actions { display: flex; gap: var(--space-4); margin-top: var(--space-3); }
  
-+/* ============ 3D 圆桌 ============ */
++/* ============ 3D 圆桌 ============
++ * 质感对齐宣传片:台面只留两圈发丝金线,靠光而不是靠填色撑起立体感;
++ * 座位是大号圆章,按纵深缩放;状态用辉光表达;投票是发光实线弧,出现时从投票者描向目标。 */
++.arena-wrap.is-3d { isolation: isolate; }
++/* 阶段氛围光:白昼暖、夜里冷蓝、投票时一点血色 */
++.arena-glow {
++  position: absolute;
++  inset: 0;
++  z-index: 0;
++  pointer-events: none;
++  background:
++    radial-gradient(ellipse 46% 40% at 50% 54%, rgba(201, 162, 74, 0.10), transparent 70%),
++    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(90, 60, 40, 0.16), transparent 75%);
++  transition: opacity var(--duration-normal) var(--ease-out);
++}
++.arena-wrap.is-night .arena-glow {
++  background:
++    radial-gradient(ellipse 46% 40% at 50% 52%, rgba(127, 156, 196, 0.16), transparent 70%),
++    radial-gradient(ellipse 80% 70% at 50% 30%, rgba(30, 50, 90, 0.30), transparent 75%);
++}
++.arena-wrap.is-vote .arena-glow {
++  background:
++    radial-gradient(ellipse 46% 40% at 50% 54%, rgba(165, 50, 42, 0.12), transparent 70%),
++    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(90, 40, 30, 0.16), transparent 75%);
++}
++
 +.arena.is-3d {
-+  width: min(100%, 1080px, calc((100vh - 240px) * 16 / 9));
++  width: min(100%, 1120px, calc((100vh - 220px) * 16 / 9));
 +  aspect-ratio: 16 / 9;
++  container-type: inline-size;
++  /* 圆章直径随桌宽和人数变化 */
++  --disc: clamp(46px, calc(var(--disc-pct, 7.6) * 1cqw), 88px);
 +}
 +.arena.is-3d::before,
 +.arena.is-3d::after { display: none; }
@@ -229,72 +294,136 @@ index ff3f1ac..cd61cf9 100644
 +  top: calc(50% - var(--tt-ry));
 +  bottom: calc(50% - var(--tt-ry));
 +  border-radius: 50%;
-+  border: var(--border-hair) solid var(--color-border-strong);
-+  background:
-+    radial-gradient(ellipse at 50% 38%, rgba(201, 162, 74, 0.07), transparent 62%),
-+    radial-gradient(ellipse at 50% 50%, var(--color-surface-1), transparent 100%);
-+  /* 台面厚度 + 落在地上的影子 */
-+  box-shadow:
-+    0 10px 0 -2px rgba(0, 0, 0, 0.35),
-+    0 10px 0 -1px var(--color-border),
-+    0 40px 80px rgba(0, 0, 0, 0.55);
++  border: 1.5px solid rgba(201, 162, 74, 0.26);
++  background: radial-gradient(ellipse at 50% 46%, rgba(201, 162, 74, 0.05), transparent 64%);
++  box-shadow: 0 0 40px rgba(201, 162, 74, 0.05), inset 0 0 60px rgba(0, 0, 0, 0.25);
 +  pointer-events: none;
-+  transition: background var(--duration-normal) var(--ease-out);
 +}
 +.tt-ring {
 +  position: absolute;
 +  inset: 22.5%;
 +  border-radius: 50%;
-+  border: var(--border-hair) solid var(--color-border);
-+  opacity: 0.7;
++  border: 1px solid rgba(201, 162, 74, 0.14);
 +}
-+.arena.is-3d.is-night .table-top {
-+  background:
-+    radial-gradient(ellipse at 50% 30%, rgba(127, 156, 196, 0.10), transparent 62%),
-+    radial-gradient(ellipse at 50% 50%, var(--color-surface-1), transparent 100%);
-+}
++.tt-ring.is-inner { inset: 38%; border-color: rgba(201, 162, 74, 0.07); }
++.arena.is-3d.is-night .table-top { border-color: rgba(170, 190, 220, 0.24); }
++.arena.is-3d.is-night .tt-ring { border-color: rgba(170, 190, 220, 0.12); }
++
++/* 座位:大号圆章 */
 +.arena.is-3d .seat-node {
 +  transform: translate(-50%, -50%) scale(var(--seat-scale, 1));
 +  filter: brightness(var(--seat-dim, 1));
-+  transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
++  gap: 10px;
++  transition: transform 220ms var(--ease-out), filter 220ms var(--ease-out);
 +}
-+.arena.is-3d .seat-node:hover,
-+.arena.is-3d .seat-node:focus-visible {
-+  transform: translate(-50%, calc(-50% - 6px)) scale(var(--seat-scale, 1));
-+  filter: none;
++.arena.is-3d .sn-disc {
++  position: relative;
++  width: var(--disc);
++  height: var(--disc);
++  border: 1.5px solid rgba(236, 227, 210, 0.22);
++  background: radial-gradient(circle at 50% 32%, #2b241f 0%, #17120f 70%);
++  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
++  animation: seatIn 620ms var(--ease-out) backwards; /* 不用 both:结束后不能占住 transform,否则选中态的 scale 失效 */
++  animation-delay: calc(var(--seat-i, 0) * 45ms);
 +}
-+.arena.is-3d .seat-node.is-speaking,
-+.arena.is-3d .seat-node.is-waiting,
-+.arena.is-3d .seat-node.is-selected { filter: none; }
-+/* 座位落在桌面上的影子 */
-+.arena.is-3d .sn-disc { position: relative; }
++.arena.is-3d .sn-num { font-size: calc(var(--disc) * 0.38); color: var(--color-text); }
++.arena.is-3d .sn-label { font-size: 11px; letter-spacing: 0.32em; }
++/* 13 人以上两侧太密:号码已在圆章上,标签只留“你”和“殁” */
++.arena.is-3d.is-crowded .seat-node:not(.is-me):not(.is-dead) .sn-label { visibility: hidden; }
++.arena.is-3d .sn-badge { top: -4px; right: -2px; min-width: 24px; height: 24px; font-size: 13px; box-shadow: 0 0 14px rgba(165, 50, 42, 0.7); }
++/* 座位落在台面上的影子 */
 +.arena.is-3d .seat-node::before {
 +  content: '';
 +  position: absolute;
-+  top: 54px;
++  top: calc(var(--disc) * 0.86);
 +  left: 50%;
-+  width: 58px;
-+  height: 14px;
++  width: calc(var(--disc) * 0.92);
++  height: calc(var(--disc) * 0.22);
 +  transform: translateX(-50%);
 +  border-radius: 50%;
-+  background: rgba(0, 0, 0, 0.6);
-+  filter: blur(5px);
++  background: rgba(0, 0, 0, 0.7);
++  filter: blur(6px);
 +  z-index: -1;
 +}
-+.arena.is-3d .arena-center { width: 34%; top: 47%; }
-+.arena.is-3d .ac-votes { max-width: 240px; }
-+/* 3D 弧线压在桌心文字之下:必须穿过桌心的长弦不挡字 */
-+.arena.is-3d .vote-web { z-index: 1; }
++/* 台面上的光斑:发言、等待、被选中时座位下方亮起 */
++.arena.is-3d .seat-node::after {
++  content: '';
++  position: absolute;
++  top: calc(var(--disc) * 0.7);
++  left: 50%;
++  width: calc(var(--disc) * 1.8);
++  height: calc(var(--disc) * 0.55);
++  transform: translateX(-50%);
++  border-radius: 50%;
++  background: radial-gradient(ellipse, var(--seat-light, transparent), transparent 70%);
++  z-index: -2;
++  opacity: 0;
++  transition: opacity 260ms var(--ease-out);
++}
++.arena.is-3d .seat-node:hover,
++.arena.is-3d .seat-node:focus-visible {
++  transform: translate(-50%, calc(-50% - 8px)) scale(var(--seat-scale, 1));
++  filter: none;
++}
++.arena.is-3d .seat-node:hover .sn-disc { border-color: rgba(201, 162, 74, 0.6); }
++
++.arena.is-3d .seat-node.is-me .sn-disc { border-color: var(--color-gold); }
++.arena.is-3d .seat-node.is-speaking {
++  transform: translate(-50%, calc(-50% - 10px)) scale(var(--seat-scale, 1));
++  filter: none;
++  --seat-light: rgba(201, 162, 74, 0.38);
++}
++.arena.is-3d .seat-node.is-speaking .sn-disc {
++  border: 2px solid var(--color-gold);
++  box-shadow: 0 0 0 4px rgba(201, 162, 74, 0.12), 0 0 46px rgba(201, 162, 74, 0.55), 0 14px 30px rgba(0, 0, 0, 0.6);
++}
++.arena.is-3d .seat-node.is-selected,
++.arena.is-3d .seat-node.is-waiting,
++.arena.is-3d .seat-node.is-paired { filter: none; }
++.arena.is-3d .seat-node.is-selected { --seat-light: rgba(201, 162, 74, 0.32); }
++.arena.is-3d .seat-node.is-waiting,
++.arena.is-3d .seat-node.is-paired { --seat-light: rgba(165, 50, 42, 0.36); }
++.arena.is-3d .seat-node.is-speaking::after,
++.arena.is-3d .seat-node.is-selected::after,
++.arena.is-3d .seat-node.is-waiting::after,
++.arena.is-3d .seat-node.is-paired::after,
++.arena.is-3d .seat-node.is-vote-lead::after { opacity: 1; }
++/* 投票:被投的座位描红,领先者辉光 */
++.arena.is-3d .seat-node.has-votes .sn-disc { border-color: rgba(192, 57, 47, 0.75); }
++.arena.is-3d .seat-node.is-vote-lead { filter: none; --seat-light: rgba(165, 50, 42, 0.42); }
++.arena.is-3d .seat-node.is-vote-lead .sn-disc {
++  border: 2px solid var(--color-blood-hover);
++  box-shadow: 0 0 0 4px rgba(165, 50, 42, 0.14), 0 0 46px rgba(165, 50, 42, 0.6), 0 14px 30px rgba(0, 0, 0, 0.6);
++}
++.arena.is-3d .seat-node.is-dead .sn-disc { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6); }
++.arena.is-3d .seat-node.camp-wolf .sn-disc { border-color: var(--color-blood); box-shadow: 0 0 26px rgba(165, 50, 42, 0.45), 0 14px 30px rgba(0, 0, 0, 0.6); }
++
++.arena.is-3d .arena-center { width: 34%; top: 48%; z-index: 2; }
++.arena.is-3d .ac-votes { max-width: 260px; }
++.arena.is-3d .vote-web { z-index: 1; filter: drop-shadow(0 0 3px rgba(236, 227, 210, 0.45)); }
 +.vote-arc {
 +  fill: none;
-+  stroke: var(--color-moonlight-dim);
-+  stroke-width: 0.22; /* viewBox 宽 100 ≈ 桌宽,0.22 ≈ 2px,与 2D 连线同粗 */
++  stroke: rgba(236, 227, 210, 0.82);
++  stroke-width: 0.2; /* viewBox 宽 100 ≈ 桌宽,0.2 ≈ 2px */
 +  stroke-linecap: round;
-+  stroke-dasharray: 1.6 1.2;
-+  opacity: 0.6;
++  stroke-dasharray: 1;
++  stroke-dashoffset: 0;
++  animation: arcDraw 700ms var(--ease-out) both;
++}
++.vote-arc.is-lead { stroke: rgba(214, 88, 74, 0.9); }
++
++@keyframes seatIn {
++  from { opacity: 0; transform: translateY(-18px) scale(0.92); }
++  to   { opacity: 1; transform: none; }
++}
++@keyframes arcDraw {
++  from { stroke-dashoffset: 1; }
++  to   { stroke-dashoffset: 0; }
 +}
 +@media (prefers-reduced-motion: reduce) {
 +  .arena.is-3d .seat-node { transition: none; }
++  .arena.is-3d .sn-disc,
++  .vote-arc { animation: none; }
 +}
 +
  /* ============ 响应式 ============ */
