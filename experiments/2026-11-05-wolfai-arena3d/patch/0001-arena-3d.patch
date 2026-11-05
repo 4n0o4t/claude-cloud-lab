@@ -1,0 +1,305 @@
+From 9d3b9371f712e65d786f3456a6cc2eb0cf0197cc Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 5 Nov 2026 02:21:26 +0000
+Subject: [PATCH] =?UTF-8?q?feat:=20=E5=AF=B9=E5=B1=80=E5=9C=86=E6=A1=8C?=
+ =?UTF-8?q?=E6=96=B0=E5=A2=9E=E7=AB=8B=E4=BD=93=E8=A7=86=E5=9B=BE=EF=BC=88?=
+ =?UTF-8?q?=E9=BB=98=E8=AE=A4=EF=BC=89=EF=BC=8C=E4=BF=9D=E7=95=99=E5=B9=B3?=
+ =?UTF-8?q?=E9=9D=A2=E8=A7=86=E5=9B=BE=E5=8F=AF=E5=88=87=E6=8D=A2?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+1. **立体圆桌**：桌面改为俯视角椭圆台面，座位按纵深缩放、排层级、带落影，近大远小；不引入 WebGL，座位仍是原来的按钮，点选、键盘和各种状态样式照旧
+2. **自己的座位转到正前方**：玩家视角下本人座位离镜头最近；旁观时 1 号在远端正中，与平面版一致
+3. **投票弧线**：立体视图里投票线改为朝桌外鼓出的弧线并压在桌心文字之下，不再横穿“当前票数”
+4. **切换与回退**：阶段栏新增“平面 / 立体”按钮，选择记在 localStorage（wk.arena.mode）；屏宽 ≤640px 自动用平面版
+5. **兼容**：原 getPlayerPositionStyle / getVoteLineCoords 不变，新增 3D 版本函数
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JagXYNx6kv4hx4difPgkbz
+---
+ frontend/src/gamePlayUi.js      |  62 +++++++++++++
+ frontend/src/views/GamePlay.vue | 156 ++++++++++++++++++++++++++++----
+ 2 files changed, 201 insertions(+), 17 deletions(-)
+
+diff --git a/frontend/src/gamePlayUi.js b/frontend/src/gamePlayUi.js
+index a345b2c..51335fc 100644
+--- a/frontend/src/gamePlayUi.js
++++ b/frontend/src/gamePlayUi.js
+@@ -46,6 +46,68 @@ export function getVoteLineCoords(voter, target, total, radius = 34) {
+   }
+ }
+ 
++/* ============ 3D 圆桌:俯视角投影 ============
++ * 不用 WebGL:桌面是椭圆(把圆按 tilt 压扁),座位仍是普通按钮,按纵深缩放、排层级。
++ * 容器宽高比 ARENA_3D_ASPECT,x 是宽度百分比、y 是高度百分比。
++ * frontSeat:转到正前方(离镜头最近)的座位;玩家看自己的座位在近处,旁观时 1 号在远端正中,与 2D 一致。 */
++export const ARENA_3D_ASPECT = 16 / 9
++
++export function arena3dGeometry(total) {
++  // 人多时桌面立起来一点,两侧座位纵向不至于挤在一起
++  const tilt = total > 12 ? 0.5 : total > 8 ? 0.46 : 0.42
++  const rx = 42
++  return { rx, ry: rx * tilt * ARENA_3D_ASPECT, tilt }
++}
++
++function seatAngle3d(index, total, frontSeat) {
++  const n = Math.max(total, 1)
++  const offset = frontSeat ? Math.PI - (2 * Math.PI * (frontSeat - 1)) / n : 0
++  return seatAngle(index, total) + offset
++}
++
++/* 返回 { x, y, depth };depth 0 = 最远(上),1 = 最近(下) */
++export function getSeatPose3d(index, total, frontSeat = null) {
++  const { rx, ry } = arena3dGeometry(total)
++  const a = seatAngle3d(index, total, frontSeat)
++  return { x: 50 + rx * Math.cos(a), y: 50 + ry * Math.sin(a), depth: (Math.sin(a) + 1) / 2 }
++}
++
++export function getPlayerPositionStyle3d(index, total, frontSeat = null) {
++  const { x, y, depth } = getSeatPose3d(index, total, frontSeat)
++  return {
++    left: `${x}%`,
++    top: `${y}%`,
++    zIndex: 4 + Math.round(depth * 20),
++    '--seat-scale': (0.8 + 0.3 * depth).toFixed(3),
++    '--seat-dim': (0.78 + 0.22 * depth).toFixed(3),
++  }
++}
++
++/* 3D 投票弧线:viewBox 0 0 100 (100/ASPECT),起止点缩进到盘内,向外鼓出避开桌心文字 */
++export function getVoteArc3d(voter, target, total, frontSeat = null) {
++  const h = 100 / ARENA_3D_ASPECT
++  const shrink = 0.86
++  const p = (seat) => {
++    const { x, y } = getSeatPose3d(seat - 1, total, frontSeat)
++    return { x: 50 + (x - 50) * shrink, y: (50 + (y - 50) * shrink) * (h / 100) }
++  }
++  const a = p(Number(voter))
++  const b = p(Number(target))
++  const c = { x: 50, y: h / 2 }
++  const mx = (a.x + b.x) / 2
++  const my = (a.y + b.y) / 2
++  const dist = Math.hypot(b.x - a.x, b.y - a.y) || 1
++  // 弧线朝远离桌心的一侧鼓出,绕开桌心的发言/票数;正对面两座(连线过桌心)固定往右绕
++  let nx = -(b.y - a.y) / dist
++  let ny = (b.x - a.x) / dist
++  const side = (mx - c.x) * nx + (my - c.y) * ny
++  if (side < 0 || (Math.abs(side) < 1e-6 && nx < 0)) { nx = -nx; ny = -ny }
++  const bulge = Math.min(dist * 0.42, 16) // 封顶:正对面的长弦不至于绕出桌外
++  const qx = mx + nx * bulge
++  const qy = my + ny * bulge - 2 // 再往上抬一点,像从桌面上方划过
++  return `M${a.x.toFixed(2)},${a.y.toFixed(2)} Q${qx.toFixed(2)},${qy.toFixed(2)} ${b.x.toFixed(2)},${b.y.toFixed(2)}`
++}
++
+ /* 发言气泡快照(gameSession 依赖) */
+ export function buildSpeechBubble(seat, content) {
+   return { show: true, seat, content }
+diff --git a/frontend/src/views/GamePlay.vue b/frontend/src/views/GamePlay.vue
+index ff3f1ac..cd61cf9 100644
+--- a/frontend/src/views/GamePlay.vue
++++ b/frontend/src/views/GamePlay.vue
+@@ -5,6 +5,7 @@ import { gameApi, GameWebSocket } from '@/api'
+ import { buildDaySummary } from '@/gamePlay'
+ import {
+   getPhaseText, formatCountdown, getPlayerPositionStyle, getVoteLineCoords,
++  getPlayerPositionStyle3d, getVoteArc3d, arena3dGeometry, ARENA_3D_ASPECT,
+   canSelectTarget, rolePortrait, roleGlyph, campKind,
+ } from '@/gamePlayUi'
+ import { applyLoverInfo, applyRoleResult, fetchInitialPlayerContext } from '@/gameRealtime'
+@@ -203,15 +204,35 @@ const takeoverCandidatePlayers = computed(() => (
+ 
+ const pad2 = n => String(n).padStart(2, '0')
+ 
+-const getPlayerPosition = (player) => {
+-  const total = totalPlayers.value || players.value.length || 12
+-  return getPlayerPositionStyle(player.seat - 1, total)
+-}
++/* 圆桌视图:3D(默认)/ 2D,记在本机;窄屏(≤640px)一律 2D,椭圆桌在手机宽度下座位会挤 */
++const ARENA_MODE_KEY = 'wk.arena.mode'
++const arenaMode = ref((() => {
++  try { return localStorage.getItem(ARENA_MODE_KEY) === '2d' ? '2d' : '3d' } catch { return '3d' }
++})())
++const narrowMq = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 640px)') : null
++const isNarrow = ref(Boolean(narrowMq?.matches))
++const onNarrowChange = (e) => { isNarrow.value = e.matches }
++narrowMq?.addEventListener?.('change', onNarrowChange)
++onUnmounted(() => narrowMq?.removeEventListener?.('change', onNarrowChange))
++const is3d = computed(() => arenaMode.value === '3d' && !isNarrow.value)
++const toggleArenaMode = () => {
++  arenaMode.value = arenaMode.value === '3d' ? '2d' : '3d'
++  try { localStorage.setItem(ARENA_MODE_KEY, arenaMode.value) } catch { /* 隐私模式等:只在本页生效 */ }
++}
++const voteViewBox = computed(() => (is3d.value ? `0 0 100 ${(100 / ARENA_3D_ASPECT).toFixed(3)}` : '0 0 100 100'))
++
++const seatTotal = () => totalPlayers.value || players.value.length || 12
++const arenaVars = computed(() => {
++  const { rx, ry } = arena3dGeometry(seatTotal())
++  return { '--tt-rx': `${rx}%`, '--tt-ry': `${ry}%` }
++})
+ 
+-const voteLine = (voter, target) => {
+-  const total = totalPlayers.value || players.value.length || 12
+-  return getVoteLineCoords(Number(voter), Number(target), total)
+-}
++const getPlayerPosition = (player) => (is3d.value
++  ? getPlayerPositionStyle3d(player.seat - 1, seatTotal(), mySeat.value)
++  : getPlayerPositionStyle(player.seat - 1, seatTotal()))
++
++const voteLine = (voter, target) => getVoteLineCoords(Number(voter), Number(target), seatTotal())
++const voteArc = (voter, target) => getVoteArc3d(voter, target, seatTotal(), mySeat.value)
+ 
+ function godInfoOf(seat) {
+   return godModePlayers.value.find(g => g.seat === seat) || null
+@@ -852,6 +873,10 @@ onUnmounted(() => {
+             接 管 中 · 座 {{ pad2(mySeat) }}
+             <button type="button" class="pb-release" :disabled="takeoverBusy" @click="releaseSeat">松 手</button>
+           </span>
++          <button
++            v-if="!isNarrow" type="button" class="pb-btn"
++            :title="is3d ? '切换为平面圆桌' : '切换为立体圆桌'" @click="toggleArenaMode"
++          >{{ is3d ? '平 面' : '立 体' }}</button>
+           <button v-if="godModeEnabled" type="button" class="pb-btn" :class="{ 'is-god': godModeActive }" @click="toggleGodMode">
+             {{ godModeActive ? '闭 眼' : '上 帝' }}
+           </button>
+@@ -873,24 +898,39 @@ onUnmounted(() => {
+ 
+       <!-- 圆桌 -->
+       <div class="arena-wrap">
+-        <div class="arena">
++        <div class="arena" :class="{ 'is-3d': is3d, 'is-night': isNight }" :style="is3d ? arenaVars : null">
++          <!-- 3D:桌面(椭圆台面 + 两圈刻线) -->
++          <div v-if="is3d" class="table-top" aria-hidden="true">
++            <span class="tt-ring"></span>
++          </div>
+           <!-- 投票连线 -->
+           <svg
+             v-if="gameState.phase === 'vote' && Object.keys(currentVotes).length > 0"
+-            class="vote-web" viewBox="0 0 100 100" aria-hidden="true"
++            class="vote-web" :viewBox="voteViewBox" aria-hidden="true"
+           >
+             <defs>
+               <marker id="voteArrow" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+                 <polygon points="0 0, 6 2, 0 4" fill="var(--color-moonlight-dim)" fill-opacity="0.5" />
+               </marker>
+             </defs>
+-            <line
+-              v-for="(target, voter) in currentVotes"
+-              :key="`vote-${voter}-${target}`"
+-              v-bind="voteLine(voter, target)"
+-              class="vote-line"
+-              marker-end="url(#voteArrow)"
+-            />
++            <template v-if="is3d">
++              <path
++                v-for="(target, voter) in currentVotes"
++                :key="`vote3d-${voter}-${target}`"
++                :d="voteArc(voter, target)"
++                class="vote-arc"
++                marker-end="url(#voteArrow)"
++              />
++            </template>
++            <template v-else>
++              <line
++                v-for="(target, voter) in currentVotes"
++                :key="`vote-${voter}-${target}`"
++                v-bind="voteLine(voter, target)"
++                class="vote-line"
++                marker-end="url(#voteArrow)"
++              />
++            </template>
+           </svg>
+ 
+           <!-- 座位 -->
+@@ -2104,6 +2144,88 @@ onUnmounted(() => {
+ }
+ .ct-actions { display: flex; gap: var(--space-4); margin-top: var(--space-3); }
+ 
++/* ============ 3D 圆桌 ============ */
++.arena.is-3d {
++  width: min(100%, 1080px, calc((100vh - 240px) * 16 / 9));
++  aspect-ratio: 16 / 9;
++}
++.arena.is-3d::before,
++.arena.is-3d::after { display: none; }
++.table-top {
++  position: absolute;
++  left: calc(50% - var(--tt-rx));
++  right: calc(50% - var(--tt-rx));
++  top: calc(50% - var(--tt-ry));
++  bottom: calc(50% - var(--tt-ry));
++  border-radius: 50%;
++  border: var(--border-hair) solid var(--color-border-strong);
++  background:
++    radial-gradient(ellipse at 50% 38%, rgba(201, 162, 74, 0.07), transparent 62%),
++    radial-gradient(ellipse at 50% 50%, var(--color-surface-1), transparent 100%);
++  /* 台面厚度 + 落在地上的影子 */
++  box-shadow:
++    0 10px 0 -2px rgba(0, 0, 0, 0.35),
++    0 10px 0 -1px var(--color-border),
++    0 40px 80px rgba(0, 0, 0, 0.55);
++  pointer-events: none;
++  transition: background var(--duration-normal) var(--ease-out);
++}
++.tt-ring {
++  position: absolute;
++  inset: 22.5%;
++  border-radius: 50%;
++  border: var(--border-hair) solid var(--color-border);
++  opacity: 0.7;
++}
++.arena.is-3d.is-night .table-top {
++  background:
++    radial-gradient(ellipse at 50% 30%, rgba(127, 156, 196, 0.10), transparent 62%),
++    radial-gradient(ellipse at 50% 50%, var(--color-surface-1), transparent 100%);
++}
++.arena.is-3d .seat-node {
++  transform: translate(-50%, -50%) scale(var(--seat-scale, 1));
++  filter: brightness(var(--seat-dim, 1));
++  transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
++}
++.arena.is-3d .seat-node:hover,
++.arena.is-3d .seat-node:focus-visible {
++  transform: translate(-50%, calc(-50% - 6px)) scale(var(--seat-scale, 1));
++  filter: none;
++}
++.arena.is-3d .seat-node.is-speaking,
++.arena.is-3d .seat-node.is-waiting,
++.arena.is-3d .seat-node.is-selected { filter: none; }
++/* 座位落在桌面上的影子 */
++.arena.is-3d .sn-disc { position: relative; }
++.arena.is-3d .seat-node::before {
++  content: '';
++  position: absolute;
++  top: 54px;
++  left: 50%;
++  width: 58px;
++  height: 14px;
++  transform: translateX(-50%);
++  border-radius: 50%;
++  background: rgba(0, 0, 0, 0.6);
++  filter: blur(5px);
++  z-index: -1;
++}
++.arena.is-3d .arena-center { width: 34%; top: 47%; }
++.arena.is-3d .ac-votes { max-width: 240px; }
++/* 3D 弧线压在桌心文字之下:必须穿过桌心的长弦不挡字 */
++.arena.is-3d .vote-web { z-index: 1; }
++.vote-arc {
++  fill: none;
++  stroke: var(--color-moonlight-dim);
++  stroke-width: 0.22; /* viewBox 宽 100 ≈ 桌宽,0.22 ≈ 2px,与 2D 连线同粗 */
++  stroke-linecap: round;
++  stroke-dasharray: 1.6 1.2;
++  opacity: 0.6;
++}
++@media (prefers-reduced-motion: reduce) {
++  .arena.is-3d .seat-node { transition: none; }
++}
++
+ /* ============ 响应式 ============ */
+ @media (max-width: 1280px) {
+   .log-col {
+-- 
+2.43.0
+

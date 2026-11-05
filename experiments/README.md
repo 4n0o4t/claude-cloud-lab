@@ -18,4 +18,5 @@
 | [`2026-09-24-threejs-titanic`](2026-09-24-threejs-titanic/README.md) | 单文件 Three.js 泰坦尼克号动画如何组织、还原工程是否忠实 | 完成 | 还原忠实且可运行；核心是“故事状态为时间的纯函数”，疑似多 Agent 分模块编写 |
 | [`2026-09-24-multi-agent-workflows`](2026-09-24-multi-agent-workflows/README.md) | 从 AI 自组织大项目提炼可用的多 Agent 工作流 | 完成 | 共同骨架是“契约 + 文件所有权 + 共享状态 + 集成核对”；补充 macOS 27 案例（一目录一 owner + 注册表）；提出 10 条候选规则与迷你泰坦尼克号试点，待采纳 |
 | [`2026-11-02-remotion-sky-blue`](2026-11-02-remotion-sky-blue/README.md) | 用 Remotion 从零做一支科普短片（含 AI 配音），体验 Agent 驱动的程序化视频 | 完成 | 云端容器开箱可用；开源 Kokoro 中文 TTS 在 CPU 上跑通“旁白时长驱动时间轴”；质量关卡是看关键帧 + ASR 回听 |
+| [`2026-11-05-wolfai-arena3d`](2026-11-05-wolfai-arena3d/README.md) | 把宣传片里的伪 3D 圆桌做成 wolfai-killer 对局页的立体视图 | 原型完成，补丁待所有者合入 | 纯 CSS 投影 + 原按钮，不引入 WebGL；自己的座位转到正前方，投票弧线绕开桌心；可切回 2D，窄屏自动回退 |
 | [`2026-11-03-wolfai-promo`](2026-11-03-wolfai-promo/README.md) | 用 Remotion 给真实前端项目（月夜狼人杀）做产品宣传片 | 完成 | 真实界面录屏 + Remotion 镜头字幕声音很顺；依赖 LLM 的产品用“按提示词分类的假接口”导演剧本局，可控、零费用、可重复；第二版教训：录屏只是素材，要拆组件、加景深、按节拍讲故事才像宣传片 |
